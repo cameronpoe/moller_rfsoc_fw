@@ -1355,15 +1355,15 @@ proc cr_bd_mts { parentCell } {
      CONFIG.CLKIN2_JITTER_PS {100.000} \
      CONFIG.CLKIN2_UI_JITTER {100.000} \
      CONFIG.CLKOUT1_DRIVES {Buffer} \
-     CONFIG.CLKOUT1_JITTER {68.289} \
+     CONFIG.CLKOUT1_JITTER {100.463} \
      CONFIG.CLKOUT1_MATCHED_ROUTING {true} \
-     CONFIG.CLKOUT1_PHASE_ERROR {66.020} \
-     CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {500.0} \
+     CONFIG.CLKOUT1_PHASE_ERROR {70.309} \
+     CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {62.5} \
      CONFIG.CLKOUT2_DRIVES {Buffer} \
-     CONFIG.CLKOUT2_JITTER {78.335} \
+     CONFIG.CLKOUT2_JITTER {114.922} \
      CONFIG.CLKOUT2_MATCHED_ROUTING {true} \
-     CONFIG.CLKOUT2_PHASE_ERROR {66.020} \
-     CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {250.0} \
+     CONFIG.CLKOUT2_PHASE_ERROR {70.309} \
+     CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {31.25} \
      CONFIG.CLKOUT2_USED {true} \
      CONFIG.CLKOUT3_DRIVES {Buffer} \
      CONFIG.CLKOUT4_DRIVES {Buffer} \
@@ -1375,13 +1375,13 @@ proc cr_bd_mts { parentCell } {
      CONFIG.JITTER_OPTIONS {PS} \
      CONFIG.JITTER_SEL {Min_O_Jitter} \
      CONFIG.MMCM_BANDWIDTH {HIGH} \
-     CONFIG.MMCM_CLKFBOUT_MULT_F {3.000} \
+     CONFIG.MMCM_CLKFBOUT_MULT_F {6.375} \
      CONFIG.MMCM_CLKIN1_PERIOD {2.000} \
      CONFIG.MMCM_CLKIN2_PERIOD {10.0} \
-     CONFIG.MMCM_CLKOUT0_DIVIDE_F {3.000} \
-     CONFIG.MMCM_CLKOUT1_DIVIDE {6} \
+     CONFIG.MMCM_CLKOUT0_DIVIDE_F {25.500} \
+     CONFIG.MMCM_CLKOUT1_DIVIDE {51} \
      CONFIG.MMCM_COMPENSATION {AUTO} \
-     CONFIG.MMCM_DIVCLK_DIVIDE {1} \
+     CONFIG.MMCM_DIVCLK_DIVIDE {2} \
      CONFIG.MMCM_REF_JITTER1 {0.000} \
      CONFIG.MMCM_REF_JITTER2 {0.010} \
      CONFIG.NUM_OUT_CLKS {2} \
@@ -1389,6 +1389,7 @@ proc cr_bd_mts { parentCell } {
      CONFIG.PRIMITIVE {MMCM} \
      CONFIG.PRIM_IN_FREQ {500.0} \
      CONFIG.PRIM_SOURCE {Global_buffer} \
+     CONFIG.REF_CLK_FREQ {12.5} \
      CONFIG.SECONDARY_SOURCE {Single_ended_clock_capable_pin} \
      CONFIG.USE_LOCKED {true} \
      CONFIG.USE_PHASE_ALIGNMENT {true} \
@@ -1632,7 +1633,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC0_Clock_Dist {0} \
    CONFIG.ADC0_Clock_Source {2} \
    CONFIG.ADC0_Enable {1} \
-   CONFIG.ADC0_Fabric_Freq {500.000} \
+   CONFIG.ADC0_Fabric_Freq {62.500} \
    CONFIG.ADC0_Multi_Tile_Sync {true} \
    CONFIG.ADC0_Outclk_Freq {250.000} \
    CONFIG.ADC0_PLL_Enable {false} \
@@ -1641,7 +1642,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC1_Clock_Dist {0} \
    CONFIG.ADC1_Clock_Source {2} \
    CONFIG.ADC1_Enable {1} \
-   CONFIG.ADC1_Fabric_Freq {500.000} \
+   CONFIG.ADC1_Fabric_Freq {62.500} \
    CONFIG.ADC1_Multi_Tile_Sync {true} \
    CONFIG.ADC1_Outclk_Freq {250.000} \
    CONFIG.ADC1_PLL_Enable {false} \
@@ -1650,7 +1651,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC2_Clock_Dist {2} \
    CONFIG.ADC2_Clock_Source {2} \
    CONFIG.ADC2_Enable {1} \
-   CONFIG.ADC2_Fabric_Freq {500.000} \
+   CONFIG.ADC2_Fabric_Freq {62.500} \
    CONFIG.ADC2_Multi_Tile_Sync {true} \
    CONFIG.ADC2_Outclk_Freq {250.000} \
    CONFIG.ADC2_PLL_Enable {true} \
@@ -1658,7 +1659,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC2_Sampling_Rate {4.0} \
    CONFIG.ADC3_Clock_Source {2} \
    CONFIG.ADC3_Enable {1} \
-   CONFIG.ADC3_Fabric_Freq {500.000} \
+   CONFIG.ADC3_Fabric_Freq {62.500} \
    CONFIG.ADC3_Multi_Tile_Sync {true} \
    CONFIG.ADC3_Outclk_Freq {250.000} \
    CONFIG.ADC3_PLL_Enable {false} \
@@ -1700,20 +1701,20 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC_Data_Width23 {4} \
    CONFIG.ADC_Data_Width30 {4} \
    CONFIG.ADC_Data_Width31 {4} \
-   CONFIG.ADC_Decimation_Mode00 {2} \
-   CONFIG.ADC_Decimation_Mode01 {2} \
-   CONFIG.ADC_Decimation_Mode02 {2} \
-   CONFIG.ADC_Decimation_Mode03 {2} \
-   CONFIG.ADC_Decimation_Mode10 {2} \
-   CONFIG.ADC_Decimation_Mode11 {2} \
+   CONFIG.ADC_Decimation_Mode00 {16} \
+   CONFIG.ADC_Decimation_Mode01 {16} \
+   CONFIG.ADC_Decimation_Mode02 {16} \
+   CONFIG.ADC_Decimation_Mode03 {16} \
+   CONFIG.ADC_Decimation_Mode10 {16} \
+   CONFIG.ADC_Decimation_Mode11 {16} \
    CONFIG.ADC_Decimation_Mode12 {0} \
    CONFIG.ADC_Decimation_Mode13 {0} \
-   CONFIG.ADC_Decimation_Mode20 {2} \
-   CONFIG.ADC_Decimation_Mode21 {2} \
-   CONFIG.ADC_Decimation_Mode22 {2} \
-   CONFIG.ADC_Decimation_Mode23 {2} \
-   CONFIG.ADC_Decimation_Mode30 {2} \
-   CONFIG.ADC_Decimation_Mode31 {2} \
+   CONFIG.ADC_Decimation_Mode20 {16} \
+   CONFIG.ADC_Decimation_Mode21 {16} \
+   CONFIG.ADC_Decimation_Mode22 {16} \
+   CONFIG.ADC_Decimation_Mode23 {16} \
+   CONFIG.ADC_Decimation_Mode30 {16} \
+   CONFIG.ADC_Decimation_Mode31 {16} \
    CONFIG.ADC_Dither00 {true} \
    CONFIG.ADC_Dither01 {true} \
    CONFIG.ADC_Dither10 {true} \
@@ -1866,6 +1867,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.DAC_Slice30_Enable {true} \
    CONFIG.DAC_Slice32_Enable {false} \
    CONFIG.DAC_VOP_Mode {0} \
+   CONFIG.PL_Clock_Freq {12.5} \
    CONFIG.RF_Analyzer {1} \
    CONFIG.mADC_RESERVED_1_00 {false} \
    CONFIG.mADC_RESERVED_1_02 {false} \
