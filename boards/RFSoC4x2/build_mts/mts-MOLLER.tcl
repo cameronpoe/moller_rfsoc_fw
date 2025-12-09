@@ -642,13 +642,14 @@ proc cr_bd_mts { parentCell } {
        return 1
      }
       set_property -dict [ list \
+     CONFIG.DWIDTH {128} \
      CONFIG.MEM_SIZE_BYTES {131072} \
    ] $ADCRAMcapture_0
   
     # Create instance: axi_bram_ctrl_0, and set properties
     set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
     set_property -dict [ list \
-     CONFIG.DATA_WIDTH {256} \
+     CONFIG.DATA_WIDTH {128} \
      CONFIG.ECC_TYPE {0} \
      CONFIG.READ_LATENCY {3} \
      CONFIG.SINGLE_PORT_BRAM {1} \
@@ -663,7 +664,7 @@ proc cr_bd_mts { parentCell } {
     # Create instance: axis_dwidth_converter_0, and set properties
     set axis_dwidth_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_dwidth_converter:1.1 axis_dwidth_converter_0 ]
     set_property -dict [ list \
-     CONFIG.M_TDATA_NUM_BYTES {32} \
+     CONFIG.M_TDATA_NUM_BYTES {16} \
    ] $axis_dwidth_converter_0
   
     # Create instance: blk_mem_gen_0, and set properties
@@ -759,13 +760,14 @@ proc cr_bd_mts { parentCell } {
        return 1
      }
       set_property -dict [ list \
+     CONFIG.DWIDTH {128} \
      CONFIG.MEM_SIZE_BYTES {131072} \
    ] $ADCRAMcapture_0
   
     # Create instance: axi_bram_ctrl_0, and set properties
     set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
     set_property -dict [ list \
-     CONFIG.DATA_WIDTH {256} \
+     CONFIG.DATA_WIDTH {128} \
      CONFIG.ECC_TYPE {0} \
      CONFIG.READ_LATENCY {3} \
      CONFIG.SINGLE_PORT_BRAM {1} \
@@ -780,7 +782,7 @@ proc cr_bd_mts { parentCell } {
     # Create instance: axis_dwidth_converter_0, and set properties
     set axis_dwidth_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_dwidth_converter:1.1 axis_dwidth_converter_0 ]
     set_property -dict [ list \
-     CONFIG.M_TDATA_NUM_BYTES {32} \
+     CONFIG.M_TDATA_NUM_BYTES {16} \
    ] $axis_dwidth_converter_0
   
     # Create instance: blk_mem_gen_0, and set properties
@@ -876,13 +878,14 @@ proc cr_bd_mts { parentCell } {
        return 1
      }
       set_property -dict [ list \
+     CONFIG.DWIDTH {128} \
      CONFIG.MEM_SIZE_BYTES {131072} \
    ] $ADCRAMcapture_0
   
     # Create instance: axi_bram_ctrl_0, and set properties
     set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
     set_property -dict [ list \
-     CONFIG.DATA_WIDTH {256} \
+     CONFIG.DATA_WIDTH {128} \
      CONFIG.ECC_TYPE {0} \
      CONFIG.READ_LATENCY {3} \
      CONFIG.SINGLE_PORT_BRAM {1} \
@@ -897,7 +900,7 @@ proc cr_bd_mts { parentCell } {
     # Create instance: axis_dwidth_converter_0, and set properties
     set axis_dwidth_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_dwidth_converter:1.1 axis_dwidth_converter_0 ]
     set_property -dict [ list \
-     CONFIG.M_TDATA_NUM_BYTES {32} \
+     CONFIG.M_TDATA_NUM_BYTES {16} \
    ] $axis_dwidth_converter_0
   
     # Create instance: blk_mem_gen_0, and set properties
@@ -993,13 +996,14 @@ proc cr_bd_mts { parentCell } {
        return 1
      }
       set_property -dict [ list \
+     CONFIG.DWIDTH {128} \
      CONFIG.MEM_SIZE_BYTES {131072} \
    ] $ADCRAMcapture_0
   
     # Create instance: axi_bram_ctrl_0, and set properties
     set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
     set_property -dict [ list \
-     CONFIG.DATA_WIDTH {256} \
+     CONFIG.DATA_WIDTH {128} \
      CONFIG.ECC_TYPE {0} \
      CONFIG.READ_LATENCY {3} \
      CONFIG.SINGLE_PORT_BRAM {1} \
@@ -1015,7 +1019,7 @@ proc cr_bd_mts { parentCell } {
     # Create instance: axis_dwidth_converter_0, and set properties
     set axis_dwidth_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_dwidth_converter:1.1 axis_dwidth_converter_0 ]
     set_property -dict [ list \
-     CONFIG.M_TDATA_NUM_BYTES {32} \
+     CONFIG.M_TDATA_NUM_BYTES {16} \
    ] $axis_dwidth_converter_0
   
     # Create instance: blk_mem_gen_0, and set properties
@@ -1242,7 +1246,7 @@ proc cr_bd_mts { parentCell } {
     set_property -dict [ list \
      CONFIG.HAS_MI_TKEEP {0} \
      CONFIG.M_TDATA_NUM_BYTES {32} \
-     CONFIG.S_TDATA_NUM_BYTES {16} \
+     CONFIG.S_TDATA_NUM_BYTES {8} \
    ] $axis_dwidth_converter_0
   
     # Create instance: rst_ddr4_0_333M, and set properties
@@ -1499,11 +1503,13 @@ proc cr_bd_mts { parentCell } {
   set axis_broadcaster_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_broadcaster:1.1 axis_broadcaster_0 ]
   set_property -dict [ list \
    CONFIG.HAS_TREADY {1} \
-   CONFIG.M02_TDATA_REMAP {tdata[127:0]} \
-   CONFIG.M03_TDATA_REMAP {tdata[127:0]} \
+   CONFIG.M00_TDATA_REMAP {tdata[63:0]} \
+   CONFIG.M01_TDATA_REMAP {tdata[63:0]} \
+   CONFIG.M02_TDATA_REMAP {tdata[63:0]} \
+   CONFIG.M03_TDATA_REMAP {tdata[63:0]} \
    CONFIG.M04_TDATA_REMAP {tdata[127:0]} \
    CONFIG.M05_TDATA_REMAP {tdata[127:0]} \
-   CONFIG.M_TDATA_NUM_BYTES {16} \
+   CONFIG.M_TDATA_NUM_BYTES {8} \
    CONFIG.NUM_MI {4} \
    CONFIG.S_TDATA_NUM_BYTES {16} \
  ] $axis_broadcaster_0
@@ -1653,6 +1659,7 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC3_Clock_Source {2} \
    CONFIG.ADC3_Enable {1} \
    CONFIG.ADC3_Fabric_Freq {500.000} \
+   CONFIG.ADC3_Multi_Tile_Sync {true} \
    CONFIG.ADC3_Outclk_Freq {250.000} \
    CONFIG.ADC3_PLL_Enable {false} \
    CONFIG.ADC3_Refclk_Freq {4000.000} \
@@ -1679,34 +1686,34 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC_Data_Type21 {1} \
    CONFIG.ADC_Data_Type22 {1} \
    CONFIG.ADC_Data_Type23 {1} \
-   CONFIG.ADC_Data_Width00 {8} \
-   CONFIG.ADC_Data_Width01 {8} \
-   CONFIG.ADC_Data_Width02 {8} \
-   CONFIG.ADC_Data_Width03 {8} \
-   CONFIG.ADC_Data_Width10 {8} \
-   CONFIG.ADC_Data_Width11 {8} \
+   CONFIG.ADC_Data_Width00 {4} \
+   CONFIG.ADC_Data_Width01 {4} \
+   CONFIG.ADC_Data_Width02 {4} \
+   CONFIG.ADC_Data_Width03 {4} \
+   CONFIG.ADC_Data_Width10 {4} \
+   CONFIG.ADC_Data_Width11 {4} \
    CONFIG.ADC_Data_Width12 {8} \
    CONFIG.ADC_Data_Width13 {8} \
-   CONFIG.ADC_Data_Width20 {8} \
-   CONFIG.ADC_Data_Width21 {8} \
-   CONFIG.ADC_Data_Width22 {8} \
-   CONFIG.ADC_Data_Width23 {8} \
-   CONFIG.ADC_Data_Width30 {8} \
-   CONFIG.ADC_Data_Width31 {8} \
-   CONFIG.ADC_Decimation_Mode00 {1} \
-   CONFIG.ADC_Decimation_Mode01 {1} \
-   CONFIG.ADC_Decimation_Mode02 {1} \
-   CONFIG.ADC_Decimation_Mode03 {1} \
-   CONFIG.ADC_Decimation_Mode10 {1} \
-   CONFIG.ADC_Decimation_Mode11 {1} \
+   CONFIG.ADC_Data_Width20 {4} \
+   CONFIG.ADC_Data_Width21 {4} \
+   CONFIG.ADC_Data_Width22 {4} \
+   CONFIG.ADC_Data_Width23 {4} \
+   CONFIG.ADC_Data_Width30 {4} \
+   CONFIG.ADC_Data_Width31 {4} \
+   CONFIG.ADC_Decimation_Mode00 {2} \
+   CONFIG.ADC_Decimation_Mode01 {2} \
+   CONFIG.ADC_Decimation_Mode02 {2} \
+   CONFIG.ADC_Decimation_Mode03 {2} \
+   CONFIG.ADC_Decimation_Mode10 {2} \
+   CONFIG.ADC_Decimation_Mode11 {2} \
    CONFIG.ADC_Decimation_Mode12 {0} \
    CONFIG.ADC_Decimation_Mode13 {0} \
-   CONFIG.ADC_Decimation_Mode20 {1} \
-   CONFIG.ADC_Decimation_Mode21 {1} \
-   CONFIG.ADC_Decimation_Mode22 {1} \
-   CONFIG.ADC_Decimation_Mode23 {1} \
-   CONFIG.ADC_Decimation_Mode30 {1} \
-   CONFIG.ADC_Decimation_Mode31 {1} \
+   CONFIG.ADC_Decimation_Mode20 {2} \
+   CONFIG.ADC_Decimation_Mode21 {2} \
+   CONFIG.ADC_Decimation_Mode22 {2} \
+   CONFIG.ADC_Decimation_Mode23 {2} \
+   CONFIG.ADC_Decimation_Mode30 {2} \
+   CONFIG.ADC_Decimation_Mode31 {2} \
    CONFIG.ADC_Dither00 {true} \
    CONFIG.ADC_Dither01 {true} \
    CONFIG.ADC_Dither10 {true} \
@@ -1737,10 +1744,10 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC_Mixer_Type23 {2} \
    CONFIG.ADC_Mixer_Type30 {1} \
    CONFIG.ADC_Mixer_Type31 {1} \
-   CONFIG.ADC_NCO_Freq00 {-1.497} \
-   CONFIG.ADC_NCO_Freq02 {-1.497} \
-   CONFIG.ADC_NCO_Freq20 {-1.497} \
-   CONFIG.ADC_NCO_Freq22 {-1.497} \
+   CONFIG.ADC_NCO_Freq00 {-1.485} \
+   CONFIG.ADC_NCO_Freq02 {-1.485} \
+   CONFIG.ADC_NCO_Freq20 {-1.485} \
+   CONFIG.ADC_NCO_Freq22 {-1.485} \
    CONFIG.ADC_OBS02 {false} \
    CONFIG.ADC_OBS12 {false} \
    CONFIG.ADC_OBS22 {false} \
@@ -1809,21 +1816,21 @@ proc cr_bd_mts { parentCell } {
    CONFIG.DAC_Coarse_Mixer_Freq22 {0} \
    CONFIG.DAC_Coarse_Mixer_Freq30 {3} \
    CONFIG.DAC_Coarse_Mixer_Freq32 {0} \
-   CONFIG.DAC_Data_Width00 {8} \
+   CONFIG.DAC_Data_Width00 {4} \
    CONFIG.DAC_Data_Width02 {16} \
-   CONFIG.DAC_Data_Width10 {8} \
+   CONFIG.DAC_Data_Width10 {4} \
    CONFIG.DAC_Data_Width12 {16} \
-   CONFIG.DAC_Data_Width20 {8} \
+   CONFIG.DAC_Data_Width20 {4} \
    CONFIG.DAC_Data_Width22 {16} \
-   CONFIG.DAC_Data_Width30 {8} \
+   CONFIG.DAC_Data_Width30 {4} \
    CONFIG.DAC_Data_Width32 {16} \
-   CONFIG.DAC_Interpolation_Mode00 {1} \
+   CONFIG.DAC_Interpolation_Mode00 {2} \
    CONFIG.DAC_Interpolation_Mode02 {0} \
-   CONFIG.DAC_Interpolation_Mode10 {1} \
+   CONFIG.DAC_Interpolation_Mode10 {2} \
    CONFIG.DAC_Interpolation_Mode12 {0} \
-   CONFIG.DAC_Interpolation_Mode20 {1} \
+   CONFIG.DAC_Interpolation_Mode20 {2} \
    CONFIG.DAC_Interpolation_Mode22 {0} \
-   CONFIG.DAC_Interpolation_Mode30 {1} \
+   CONFIG.DAC_Interpolation_Mode30 {2} \
    CONFIG.DAC_Interpolation_Mode32 {0} \
    CONFIG.DAC_Mixer_Type00 {1} \
    CONFIG.DAC_Mixer_Type02 {3} \
