@@ -4,8 +4,8 @@
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- --
 `timescale 1ns / 1ps
 
-module ADCRAMcapture #(parameter DWIDTH = 256, parameter MEM_SIZE_BYTES = 65536) (
-  (* X_INTERFACE_PARAMETER = "MASTER_TYPE BRAM_CTRL, READ_WRITE_MODE READ, MEM_SIZE 32768, MEM_WIDTH 256" *)
+module ADCRAMcapture #(parameter DWIDTH = 32, parameter MEM_SIZE_BYTES = 65536) (
+  (* X_INTERFACE_PARAMETER = "MASTER_TYPE BRAM_CTRL, READ_WRITE_MODE READ, MEM_SIZE 32768, MEM_WIDTH 32" *)
 
   (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM_A DIN" *)
   output reg [DWIDTH-1:0] bram_wdata, // Data In Bus (optional)
