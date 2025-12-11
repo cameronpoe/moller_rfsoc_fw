@@ -277,6 +277,7 @@ proc cr_bd_mts { parentCell } {
   xilinx.com:ip:axis_clock_converter:1.1\
   xilinx.com:ip:blk_mem_gen:8.4\
   xilinx.com:ip:axis_register_slice:1.1\
+  xilinx.com:ip:fir_compiler:7.2\
   "
   
      set list_ips_missing ""
@@ -335,6 +336,851 @@ proc cr_bd_mts { parentCell } {
   # DESIGN PROCs
   ##################################################################
   
+  
+  # Hierarchical cell: hier_singleDec7
+  proc create_hier_cell_hier_singleDec7 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec7() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec6
+  proc create_hier_cell_hier_singleDec6 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec6() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec5
+  proc create_hier_cell_hier_singleDec5 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec5() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec4
+  proc create_hier_cell_hier_singleDec4 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec4() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec3
+  proc create_hier_cell_hier_singleDec3 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec3() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec2
+  proc create_hier_cell_hier_singleDec2 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec2() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec1
+  proc create_hier_cell_hier_singleDec1 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec1() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_singleDec0
+  proc create_hier_cell_hier_singleDec0 { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_singleDec0() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: axis_clock_converter_0, and set properties
+    set axis_clock_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_clock_converter:1.1 axis_clock_converter_0 ]
+  
+    # Create instance: fir_compiler_0, and set properties
+    set fir_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fir_compiler:7.2 fir_compiler_0 ]
+    set_property -dict [ list \
+     CONFIG.Clock_Frequency {125} \
+     CONFIG.CoefficientSource {COE_File} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_Fractional_Bits {0} \
+     CONFIG.Coefficient_Sets {1} \
+     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Structure {Inferred} \
+     CONFIG.Coefficient_Width {16} \
+     CONFIG.ColumnConfig {9} \
+     CONFIG.Decimation_Rate {8} \
+     CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
+     CONFIG.Filter_Type {Decimation} \
+     CONFIG.Interpolation_Rate {1} \
+     CONFIG.Number_Channels {1} \
+     CONFIG.Number_Paths {1} \
+     CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
+     CONFIG.Output_Width {16} \
+     CONFIG.Quantization {Integer_Coefficients} \
+     CONFIG.RateSpecification {Frequency_Specification} \
+     CONFIG.SamplePeriod {1} \
+     CONFIG.Sample_Frequency {125} \
+     CONFIG.Zero_Pack_Factor {1} \
+   ] $fir_compiler_0
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins M_AXIS] [get_bd_intf_pins axis_clock_converter_0/M_AXIS]
+    connect_bd_intf_net -intf_net fir_compiler_0_M_AXIS_DATA [get_bd_intf_pins axis_clock_converter_0/S_AXIS] [get_bd_intf_pins fir_compiler_0/M_AXIS_DATA]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA] [get_bd_intf_pins fir_compiler_0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins axis_clock_converter_0/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins axis_clock_converter_0/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins axis_clock_converter_0/s_axis_aclk] [get_bd_pins fir_compiler_0/aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins axis_clock_converter_0/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
+  
+  # Hierarchical cell: hier_fullDec
+  proc create_hier_cell_hier_fullDec { parentCell nameHier } {
+  
+    variable script_folder
+  
+    if { $parentCell eq "" || $nameHier eq "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_hier_fullDec() - Empty argument(s)!"}
+       return
+    }
+  
+    # Get object for parentCell
+    set parentObj [get_bd_cells $parentCell]
+    if { $parentObj == "" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+       return
+    }
+  
+    # Make sure parentObj is hier blk
+    set parentType [get_property TYPE $parentObj]
+    if { $parentType ne "hier" } {
+       catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+       return
+    }
+  
+    # Save current instance; Restore later
+    set oldCurInst [current_bd_instance .]
+  
+    # Set parent object as current
+    current_bd_instance $parentObj
+  
+    # Create cell and set as current instance
+    set hier_obj [create_bd_cell -type hier $nameHier]
+    current_bd_instance $hier_obj
+  
+    # Create interface pins
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS0
+  
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS1
+  
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS2
+  
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS3
+  
+    create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 M_AXIS7
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA0
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA1
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA2
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA3
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA4
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA5
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA6
+  
+    create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 S_AXIS_DATA7
+  
+  
+    # Create pins
+    create_bd_pin -dir I -type clk m_axis_aclk
+    create_bd_pin -dir I -type rst m_axis_aresetn
+    create_bd_pin -dir I -type clk s_axis_aclk
+    create_bd_pin -dir I -type rst s_axis_aresetn
+  
+    # Create instance: hier_singleDec0
+    create_hier_cell_hier_singleDec0 $hier_obj hier_singleDec0
+  
+    # Create instance: hier_singleDec1
+    create_hier_cell_hier_singleDec1 $hier_obj hier_singleDec1
+  
+    # Create instance: hier_singleDec2
+    create_hier_cell_hier_singleDec2 $hier_obj hier_singleDec2
+  
+    # Create instance: hier_singleDec3
+    create_hier_cell_hier_singleDec3 $hier_obj hier_singleDec3
+  
+    # Create instance: hier_singleDec4
+    create_hier_cell_hier_singleDec4 $hier_obj hier_singleDec4
+  
+    # Create instance: hier_singleDec5
+    create_hier_cell_hier_singleDec5 $hier_obj hier_singleDec5
+  
+    # Create instance: hier_singleDec6
+    create_hier_cell_hier_singleDec6 $hier_obj hier_singleDec6
+  
+    # Create instance: hier_singleDec7
+    create_hier_cell_hier_singleDec7 $hier_obj hier_singleDec7
+  
+    # Create interface connections
+    connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S_AXIS_DATA1] [get_bd_intf_pins hier_singleDec1/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn2 [get_bd_intf_pins S_AXIS_DATA2] [get_bd_intf_pins hier_singleDec2/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn3 [get_bd_intf_pins S_AXIS_DATA3] [get_bd_intf_pins hier_singleDec3/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn4 [get_bd_intf_pins S_AXIS_DATA4] [get_bd_intf_pins hier_singleDec5/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn5 [get_bd_intf_pins S_AXIS_DATA5] [get_bd_intf_pins hier_singleDec6/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn6 [get_bd_intf_pins S_AXIS_DATA6] [get_bd_intf_pins hier_singleDec7/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn7 [get_bd_intf_pins S_AXIS_DATA7] [get_bd_intf_pins hier_singleDec4/S_AXIS_DATA]
+    connect_bd_intf_net -intf_net Conn8 [get_bd_intf_pins M_AXIS1] [get_bd_intf_pins hier_singleDec1/M_AXIS]
+    connect_bd_intf_net -intf_net Conn9 [get_bd_intf_pins M_AXIS2] [get_bd_intf_pins hier_singleDec2/M_AXIS]
+    connect_bd_intf_net -intf_net Conn10 [get_bd_intf_pins M_AXIS3] [get_bd_intf_pins hier_singleDec3/M_AXIS]
+    connect_bd_intf_net -intf_net Conn11 [get_bd_intf_pins M_AXIS7] [get_bd_intf_pins hier_singleDec7/M_AXIS]
+    connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_pins M_AXIS0] [get_bd_intf_pins hier_singleDec0/M_AXIS]
+    connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins S_AXIS_DATA0] [get_bd_intf_pins hier_singleDec0/S_AXIS_DATA]
+  
+    # Create port connections
+    connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins m_axis_aresetn] [get_bd_pins hier_singleDec0/m_axis_aresetn] [get_bd_pins hier_singleDec1/m_axis_aresetn] [get_bd_pins hier_singleDec2/m_axis_aresetn] [get_bd_pins hier_singleDec3/m_axis_aresetn] [get_bd_pins hier_singleDec4/m_axis_aresetn] [get_bd_pins hier_singleDec5/m_axis_aresetn] [get_bd_pins hier_singleDec6/m_axis_aresetn] [get_bd_pins hier_singleDec7/m_axis_aresetn]
+    connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins s_axis_aresetn] [get_bd_pins hier_singleDec0/s_axis_aresetn] [get_bd_pins hier_singleDec1/s_axis_aresetn] [get_bd_pins hier_singleDec2/s_axis_aresetn] [get_bd_pins hier_singleDec3/s_axis_aresetn] [get_bd_pins hier_singleDec4/s_axis_aresetn] [get_bd_pins hier_singleDec5/s_axis_aresetn] [get_bd_pins hier_singleDec6/s_axis_aresetn] [get_bd_pins hier_singleDec7/s_axis_aresetn]
+    connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins s_axis_aclk] [get_bd_pins hier_singleDec0/s_axis_aclk] [get_bd_pins hier_singleDec1/s_axis_aclk] [get_bd_pins hier_singleDec2/s_axis_aclk] [get_bd_pins hier_singleDec3/s_axis_aclk] [get_bd_pins hier_singleDec4/s_axis_aclk] [get_bd_pins hier_singleDec5/s_axis_aclk] [get_bd_pins hier_singleDec6/s_axis_aclk] [get_bd_pins hier_singleDec7/s_axis_aclk]
+    connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins m_axis_aclk] [get_bd_pins hier_singleDec0/m_axis_aclk] [get_bd_pins hier_singleDec1/m_axis_aclk] [get_bd_pins hier_singleDec2/m_axis_aclk] [get_bd_pins hier_singleDec3/m_axis_aclk] [get_bd_pins hier_singleDec4/m_axis_aclk] [get_bd_pins hier_singleDec5/m_axis_aclk] [get_bd_pins hier_singleDec6/m_axis_aclk] [get_bd_pins hier_singleDec7/m_axis_aclk]
+  
+    # Restore current instance
+    current_bd_instance $oldCurInst
+  }
   
   # Hierarchical cell: hier_dac_play
   proc create_hier_cell_hier_dac_play { parentCell nameHier } {
@@ -1331,8 +2177,9 @@ proc cr_bd_mts { parentCell } {
     create_bd_pin -dir I -from 0 -to 0 PL_SYSREF
     create_bd_pin -dir O -from 0 -to 0 UserSYSREF
     create_bd_pin -dir O -from 0 -to 0 -type rst bus_struct_reset
+    create_bd_pin -dir O clkDec
+    create_bd_pin -dir O -type clk clkDecDiv2
     create_bd_pin -dir O -type clk clkRF
-    create_bd_pin -dir O -type clk clkRFdiv2
     create_bd_pin -dir O -from 0 -to 0 -type rst egress_aresetn
     create_bd_pin -dir I -type rst ext_reset_in
     create_bd_pin -dir O -from 0 -to 0 -type rst ingress_aresetn
@@ -1355,17 +2202,20 @@ proc cr_bd_mts { parentCell } {
      CONFIG.CLKIN2_JITTER_PS {100.000} \
      CONFIG.CLKIN2_UI_JITTER {100.000} \
      CONFIG.CLKOUT1_DRIVES {Buffer} \
-     CONFIG.CLKOUT1_JITTER {89.314} \
+     CONFIG.CLKOUT1_JITTER {95.653} \
      CONFIG.CLKOUT1_MATCHED_ROUTING {true} \
-     CONFIG.CLKOUT1_PHASE_ERROR {64.867} \
+     CONFIG.CLKOUT1_PHASE_ERROR {79.885} \
      CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {125} \
      CONFIG.CLKOUT2_DRIVES {Buffer} \
-     CONFIG.CLKOUT2_JITTER {102.452} \
+     CONFIG.CLKOUT2_JITTER {144.682} \
      CONFIG.CLKOUT2_MATCHED_ROUTING {true} \
-     CONFIG.CLKOUT2_PHASE_ERROR {64.867} \
-     CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {62.5} \
+     CONFIG.CLKOUT2_PHASE_ERROR {79.885} \
+     CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {15.625} \
      CONFIG.CLKOUT2_USED {true} \
      CONFIG.CLKOUT3_DRIVES {Buffer} \
+     CONFIG.CLKOUT3_JITTER {166.081} \
+     CONFIG.CLKOUT3_PHASE_ERROR {79.885} \
+     CONFIG.CLKOUT3_USED {true} \
      CONFIG.CLKOUT4_DRIVES {Buffer} \
      CONFIG.CLKOUT5_DRIVES {Buffer} \
      CONFIG.CLKOUT6_DRIVES {Buffer} \
@@ -1375,16 +2225,17 @@ proc cr_bd_mts { parentCell } {
      CONFIG.JITTER_OPTIONS {PS} \
      CONFIG.JITTER_SEL {Min_O_Jitter} \
      CONFIG.MMCM_BANDWIDTH {HIGH} \
-     CONFIG.MMCM_CLKFBOUT_MULT_F {3.125} \
+     CONFIG.MMCM_CLKFBOUT_MULT_F {2.000} \
      CONFIG.MMCM_CLKIN1_PERIOD {2.000} \
      CONFIG.MMCM_CLKIN2_PERIOD {10.0} \
-     CONFIG.MMCM_CLKOUT0_DIVIDE_F {12.500} \
-     CONFIG.MMCM_CLKOUT1_DIVIDE {25} \
+     CONFIG.MMCM_CLKOUT0_DIVIDE_F {8.000} \
+     CONFIG.MMCM_CLKOUT1_DIVIDE {64} \
+     CONFIG.MMCM_CLKOUT2_DIVIDE {128} \
      CONFIG.MMCM_COMPENSATION {AUTO} \
      CONFIG.MMCM_DIVCLK_DIVIDE {1} \
      CONFIG.MMCM_REF_JITTER1 {0.000} \
      CONFIG.MMCM_REF_JITTER2 {0.010} \
-     CONFIG.NUM_OUT_CLKS {2} \
+     CONFIG.NUM_OUT_CLKS {3} \
      CONFIG.OPTIMIZE_CLOCKING_STRUCTURE_EN {false} \
      CONFIG.PRIMITIVE {MMCM} \
      CONFIG.PRIM_IN_FREQ {500.0} \
@@ -1419,13 +2270,14 @@ proc cr_bd_mts { parentCell } {
   
     # Create port connections
     connect_bd_net -net BUFG_I_0_1 [get_bd_pins PL_CLK] [get_bd_pins BUFG_PL_CLK/BUFG_I]
+    connect_bd_net -net MTSclkwiz_clk_out3 [get_bd_pins clkDecDiv2] [get_bd_pins MTSclkwiz/clk_out3] [get_bd_pins RFegressReset/slowest_sync_clk]
     connect_bd_net -net MTSclkwiz_interrupt [get_bd_pins interrupt] [get_bd_pins MTSclkwiz/interrupt]
     connect_bd_net -net PSreset_control_bus_struct_reset [get_bd_pins bus_struct_reset] [get_bd_pins PSreset_control/bus_struct_reset]
     connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins egress_aresetn] [get_bd_pins RFegressReset/peripheral_aresetn]
     connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins ingress_aresetn] [get_bd_pins RFingressReset/peripheral_aresetn]
     connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins clkRF] [get_bd_pins MTSclkwiz/clk_out1] [get_bd_pins RFingressReset/slowest_sync_clk] [get_bd_pins synchronizeSYSREF/dest_clk]
     connect_bd_net -net clk_wiz_0_locked [get_bd_pins MTSclkwiz/locked] [get_bd_pins RFegressReset/dcm_locked] [get_bd_pins RFingressReset/dcm_locked]
-    connect_bd_net -net clk_wiz_adc0_clk_out2 [get_bd_pins clkRFdiv2] [get_bd_pins MTSclkwiz/clk_out2] [get_bd_pins RFegressReset/slowest_sync_clk]
+    connect_bd_net -net clk_wiz_adc0_clk_out2 [get_bd_pins clkDec] [get_bd_pins MTSclkwiz/clk_out2]
     connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins MTSclkwiz/s_axi_aresetn] [get_bd_pins PSreset_control/peripheral_aresetn] [get_bd_pins RFingressReset/ext_reset_in]
     connect_bd_net -net src_in_0_1 [get_bd_pins PL_SYSREF] [get_bd_pins synchronizeSYSREF/src_in]
     connect_bd_net -net synchronizeSYSREF_dest_out [get_bd_pins UserSYSREF] [get_bd_pins synchronizeSYSREF/dest_out]
@@ -1566,6 +2418,9 @@ proc cr_bd_mts { parentCell } {
 
   # Create instance: hier_dac_play
   create_hier_cell_hier_dac_play [current_bd_instance .] hier_dac_play
+
+  # Create instance: hier_fullDec
+  create_hier_cell_hier_fullDec [current_bd_instance .] hier_fullDec
 
   # Create instance: internalRAM_interconnect, and set properties
   set internalRAM_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 internalRAM_interconnect ]
@@ -3460,6 +4315,11 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net C0_SYS_CLK_0_1 [get_bd_intf_ports sys_clk_ddr4] [get_bd_intf_pins ddr4_0/C0_SYS_CLK]
   connect_bd_intf_net -intf_net S_AXI1_1 [get_bd_intf_pins control_interconnect/M04_AXI] [get_bd_intf_pins gpio_control/S_AXI1]
   connect_bd_intf_net -intf_net S_AXI2_1 [get_bd_intf_pins control_interconnect/M05_AXI] [get_bd_intf_pins gpio_control/S_AXI2]
+  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_pins hier_adc0_cap/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS0]
+  connect_bd_intf_net -intf_net S_AXIS_2 [get_bd_intf_pins hier_adc1_cap/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS1]
+  connect_bd_intf_net -intf_net S_AXIS_3 [get_bd_intf_pins hier_adc2_cap/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS2]
+  connect_bd_intf_net -intf_net S_AXIS_4 [get_bd_intf_pins hier_adc3_cap/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS3]
+  connect_bd_intf_net -intf_net S_AXIS_5 [get_bd_intf_pins deepCapture/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS7]
   connect_bd_intf_net -intf_net S_AXI_1 [get_bd_intf_pins hier_dac_cap/S_AXI] [get_bd_intf_pins internalRAM_interconnect/M01_AXI]
   connect_bd_intf_net -intf_net S_AXI_2 [get_bd_intf_pins hier_adc0_cap/S_AXI] [get_bd_intf_pins internalRAM_interconnect/M02_AXI]
   connect_bd_intf_net -intf_net S_AXI_3 [get_bd_intf_pins control_interconnect/M03_AXI] [get_bd_intf_pins gpio_control/S_AXI]
@@ -3483,11 +4343,14 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets deepCapture_M_AXI_S2MM] [get_bd_
   connect_bd_intf_net -intf_net s_axi_lite_1 [get_bd_intf_pins clocktreeMTS/s_axi_lite] [get_bd_intf_pins control_interconnect/M02_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins ddr4_0/C0_DDR4_S_AXI] [get_bd_intf_pins smartconnect_0/M00_AXI]
   connect_bd_intf_net -intf_net sysref_in_0_1 [get_bd_intf_ports sysref_in] [get_bd_intf_pins usp_rf_data_converter_1/sysref_in]
-  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins hier_adc0_cap/S_AXIS] [get_bd_intf_pins usp_rf_data_converter_1/m00_axis]
-  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m01_axis [get_bd_intf_pins hier_adc1_cap/S_AXIS] [get_bd_intf_pins usp_rf_data_converter_1/m01_axis]
-  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m02_axis [get_bd_intf_pins hier_adc2_cap/S_AXIS] [get_bd_intf_pins usp_rf_data_converter_1/m02_axis]
-  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m03_axis [get_bd_intf_pins hier_adc3_cap/S_AXIS] [get_bd_intf_pins usp_rf_data_converter_1/m03_axis]
-  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m22_axis [get_bd_intf_pins deepCapture/S_AXIS] [get_bd_intf_pins usp_rf_data_converter_1/m22_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m00_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA0] [get_bd_intf_pins usp_rf_data_converter_1/m00_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m01_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA1] [get_bd_intf_pins usp_rf_data_converter_1/m01_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m02_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA2] [get_bd_intf_pins usp_rf_data_converter_1/m02_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m03_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA3] [get_bd_intf_pins usp_rf_data_converter_1/m03_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m20_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA7] [get_bd_intf_pins usp_rf_data_converter_1/m20_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m21_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA4] [get_bd_intf_pins usp_rf_data_converter_1/m21_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m22_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA5] [get_bd_intf_pins usp_rf_data_converter_1/m22_axis]
+  connect_bd_intf_net -intf_net usp_rf_data_converter_1_m23_axis [get_bd_intf_pins hier_fullDec/S_AXIS_DATA6] [get_bd_intf_pins usp_rf_data_converter_1/m23_axis]
   connect_bd_intf_net -intf_net usp_rf_data_converter_1_vout00 [get_bd_intf_ports vout00] [get_bd_intf_pins usp_rf_data_converter_1/vout00]
   connect_bd_intf_net -intf_net usp_rf_data_converter_1_vout10 [get_bd_intf_ports vout10] [get_bd_intf_pins usp_rf_data_converter_1/vout10]
   connect_bd_intf_net -intf_net usp_rf_data_converter_1_vout20 [get_bd_intf_ports vout20] [get_bd_intf_pins usp_rf_data_converter_1/vout20]
@@ -3502,15 +4365,16 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets deepCapture_M_AXI_S2MM] [get_bd_
 
   # Create port connections
   connect_bd_net -net BUFG_I_0_1 [get_bd_ports PL_CLK] [get_bd_pins clocktreeMTS/PL_CLK]
-  connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins axis_broadcaster_0/aresetn] [get_bd_pins clocktreeMTS/egress_aresetn] [get_bd_pins hier_adc0_cap/s_axi_aresetn] [get_bd_pins hier_adc1_cap/s_axi_aresetn] [get_bd_pins hier_adc2_cap/s_axi_aresetn] [get_bd_pins hier_adc3_cap/s_axi_aresetn] [get_bd_pins hier_dac_cap/s_axi_aresetn] [get_bd_pins hier_dac_play/s_axi_aresetn] [get_bd_pins internalRAM_interconnect/ARESETN] [get_bd_pins internalRAM_interconnect/M00_ARESETN] [get_bd_pins internalRAM_interconnect/M01_ARESETN] [get_bd_pins internalRAM_interconnect/M02_ARESETN] [get_bd_pins internalRAM_interconnect/M03_ARESETN] [get_bd_pins internalRAM_interconnect/M04_ARESETN] [get_bd_pins internalRAM_interconnect/M05_ARESETN] [get_bd_pins internalRAM_interconnect/S00_ARESETN]
-  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s3_axis_aresetn]
+  connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins axis_broadcaster_0/aresetn] [get_bd_pins clocktreeMTS/egress_aresetn] [get_bd_pins hier_adc0_cap/s_axi_aresetn] [get_bd_pins hier_adc1_cap/s_axi_aresetn] [get_bd_pins hier_adc2_cap/s_axi_aresetn] [get_bd_pins hier_adc3_cap/s_axi_aresetn] [get_bd_pins hier_dac_cap/s_axi_aresetn] [get_bd_pins hier_dac_play/s_axi_aresetn] [get_bd_pins hier_fullDec/m_axis_aresetn] [get_bd_pins internalRAM_interconnect/ARESETN] [get_bd_pins internalRAM_interconnect/M00_ARESETN] [get_bd_pins internalRAM_interconnect/M01_ARESETN] [get_bd_pins internalRAM_interconnect/M02_ARESETN] [get_bd_pins internalRAM_interconnect/M03_ARESETN] [get_bd_pins internalRAM_interconnect/M04_ARESETN] [get_bd_pins internalRAM_interconnect/M05_ARESETN] [get_bd_pins internalRAM_interconnect/S00_ARESETN]
+  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins hier_fullDec/s_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s3_axis_aresetn]
   connect_bd_net -net axi_dma_0_s2mm_introut [get_bd_pins deepCapture/s2mm_introut] [get_bd_pins xlconcat_0/In0]
   connect_bd_net -net axi_gpio_bram_cap_gpio_io_o [get_bd_pins gpio_control/trig_cap] [get_bd_pins hier_adc0_cap/trig_cap] [get_bd_pins hier_adc1_cap/trig_cap] [get_bd_pins hier_adc2_cap/trig_cap] [get_bd_pins hier_adc3_cap/trig_cap] [get_bd_pins hier_dac_cap/trig_cap]
   connect_bd_net -net axi_gpio_dac_gpio_io_o [get_bd_pins gpio_control/dac_enable] [get_bd_pins hier_dac_play/enable]
   connect_bd_net -net axi_gpio_fifo_flush_gpio_io_o [get_bd_pins deepCapture/fifo_flush_n] [get_bd_pins gpio_control/fifoflush]
-  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins axis_broadcaster_0/aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins deepCapture/s_axis_aclk] [get_bd_pins hier_adc0_cap/aclk] [get_bd_pins hier_adc1_cap/aclk] [get_bd_pins hier_adc2_cap/aclk] [get_bd_pins hier_adc3_cap/aclk] [get_bd_pins hier_dac_cap/aclk] [get_bd_pins hier_dac_play/aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s3_axis_aclk]
-  connect_bd_net -net clk_wiz_adc0_clk_out2 [get_bd_pins clocktreeMTS/clkRFdiv2] [get_bd_pins gpio_control/dest_clk] [get_bd_pins hier_adc0_cap/axis_clk] [get_bd_pins hier_adc1_cap/axis_clk] [get_bd_pins hier_adc2_cap/axis_clk] [get_bd_pins hier_adc3_cap/axis_clk] [get_bd_pins hier_dac_cap/axis_clk] [get_bd_pins hier_dac_play/axis_clk] [get_bd_pins internalRAM_interconnect/ACLK] [get_bd_pins internalRAM_interconnect/M00_ACLK] [get_bd_pins internalRAM_interconnect/M01_ACLK] [get_bd_pins internalRAM_interconnect/M02_ACLK] [get_bd_pins internalRAM_interconnect/M03_ACLK] [get_bd_pins internalRAM_interconnect/M04_ACLK] [get_bd_pins internalRAM_interconnect/M05_ACLK] [get_bd_pins internalRAM_interconnect/S00_ACLK] [get_bd_pins zynq_ultra_ps_e_0/maxihpm1_fpd_aclk]
+  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins axis_broadcaster_0/aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins hier_dac_cap/aclk] [get_bd_pins hier_dac_play/aclk] [get_bd_pins hier_fullDec/s_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s3_axis_aclk]
+  connect_bd_net -net clk_wiz_adc0_clk_out2 [get_bd_pins clocktreeMTS/clkDecDiv2] [get_bd_pins gpio_control/dest_clk] [get_bd_pins hier_adc0_cap/axis_clk] [get_bd_pins hier_adc1_cap/axis_clk] [get_bd_pins hier_adc2_cap/axis_clk] [get_bd_pins hier_adc3_cap/axis_clk] [get_bd_pins hier_dac_cap/axis_clk] [get_bd_pins hier_dac_play/axis_clk] [get_bd_pins internalRAM_interconnect/ACLK] [get_bd_pins internalRAM_interconnect/M00_ACLK] [get_bd_pins internalRAM_interconnect/M01_ACLK] [get_bd_pins internalRAM_interconnect/M02_ACLK] [get_bd_pins internalRAM_interconnect/M03_ACLK] [get_bd_pins internalRAM_interconnect/M04_ACLK] [get_bd_pins internalRAM_interconnect/M05_ACLK] [get_bd_pins internalRAM_interconnect/S00_ACLK] [get_bd_pins zynq_ultra_ps_e_0/maxihpm1_fpd_aclk]
   connect_bd_net -net clocktreeMTS_bus_struct_reset [get_bd_pins clocktreeMTS/bus_struct_reset] [get_bd_pins ddr4_0/sys_rst]
+  connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins clocktreeMTS/clkDec] [get_bd_pins deepCapture/s_axis_aclk] [get_bd_pins hier_adc0_cap/aclk] [get_bd_pins hier_adc1_cap/aclk] [get_bd_pins hier_adc2_cap/aclk] [get_bd_pins hier_adc3_cap/aclk] [get_bd_pins hier_fullDec/m_axis_aclk]
   connect_bd_net -net clocktreeMTS_interrupt [get_bd_pins clocktreeMTS/interrupt] [get_bd_pins xlconcat_0/In2]
   connect_bd_net -net ddr4_0_c0_ddr4_ui_clk [get_bd_pins ddr4_0/c0_ddr4_ui_clk] [get_bd_pins deepCapture/m_axi_s2mm_aclk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins system_ila_0/clk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk]
   connect_bd_net -net ddr4_0_c0_ddr4_ui_clk_sync_rst [get_bd_pins ddr4_0/c0_ddr4_ui_clk_sync_rst] [get_bd_pins deepCapture/ext_reset_in]
