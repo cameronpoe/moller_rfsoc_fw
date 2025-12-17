@@ -767,13 +767,14 @@ proc cr_bd_mts { parentCell } {
     set_property -dict [ list \
      CONFIG.Clock_Frequency {125} \
      CONFIG.CoefficientSource {COE_File} \
-     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/no_dec_coeffs.coe} \
      CONFIG.Coefficient_Fractional_Bits {0} \
      CONFIG.Coefficient_Sets {1} \
-     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Sign {Unsigned} \
      CONFIG.Coefficient_Structure {Inferred} \
      CONFIG.Coefficient_Width {16} \
-     CONFIG.ColumnConfig {9} \
+     CONFIG.ColumnConfig {1} \
+     CONFIG.Data_Width {16} \
      CONFIG.Decimation_Rate {8} \
      CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
      CONFIG.Filter_Type {Decimation} \
@@ -781,7 +782,7 @@ proc cr_bd_mts { parentCell } {
      CONFIG.Number_Channels {1} \
      CONFIG.Number_Paths {1} \
      CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
-     CONFIG.Output_Width {16} \
+     CONFIG.Output_Width {15} \
      CONFIG.Quantization {Integer_Coefficients} \
      CONFIG.RateSpecification {Frequency_Specification} \
      CONFIG.SamplePeriod {1} \
@@ -860,13 +861,14 @@ proc cr_bd_mts { parentCell } {
     set_property -dict [ list \
      CONFIG.Clock_Frequency {125} \
      CONFIG.CoefficientSource {COE_File} \
-     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/no_dec_coeffs.coe} \
      CONFIG.Coefficient_Fractional_Bits {0} \
      CONFIG.Coefficient_Sets {1} \
-     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Sign {Unsigned} \
      CONFIG.Coefficient_Structure {Inferred} \
      CONFIG.Coefficient_Width {16} \
-     CONFIG.ColumnConfig {9} \
+     CONFIG.ColumnConfig {1} \
+     CONFIG.Data_Width {16} \
      CONFIG.Decimation_Rate {8} \
      CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
      CONFIG.Filter_Type {Decimation} \
@@ -874,7 +876,7 @@ proc cr_bd_mts { parentCell } {
      CONFIG.Number_Channels {1} \
      CONFIG.Number_Paths {1} \
      CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
-     CONFIG.Output_Width {16} \
+     CONFIG.Output_Width {15} \
      CONFIG.Quantization {Integer_Coefficients} \
      CONFIG.RateSpecification {Frequency_Specification} \
      CONFIG.SamplePeriod {1} \
@@ -953,13 +955,14 @@ proc cr_bd_mts { parentCell } {
     set_property -dict [ list \
      CONFIG.Clock_Frequency {125} \
      CONFIG.CoefficientSource {COE_File} \
-     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/no_dec_coeffs.coe} \
      CONFIG.Coefficient_Fractional_Bits {0} \
      CONFIG.Coefficient_Sets {1} \
-     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Sign {Unsigned} \
      CONFIG.Coefficient_Structure {Inferred} \
      CONFIG.Coefficient_Width {16} \
-     CONFIG.ColumnConfig {9} \
+     CONFIG.ColumnConfig {1} \
+     CONFIG.Data_Width {16} \
      CONFIG.Decimation_Rate {8} \
      CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
      CONFIG.Filter_Type {Decimation} \
@@ -967,7 +970,7 @@ proc cr_bd_mts { parentCell } {
      CONFIG.Number_Channels {1} \
      CONFIG.Number_Paths {1} \
      CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
-     CONFIG.Output_Width {16} \
+     CONFIG.Output_Width {15} \
      CONFIG.Quantization {Integer_Coefficients} \
      CONFIG.RateSpecification {Frequency_Specification} \
      CONFIG.SamplePeriod {1} \
@@ -1046,13 +1049,14 @@ proc cr_bd_mts { parentCell } {
     set_property -dict [ list \
      CONFIG.Clock_Frequency {125} \
      CONFIG.CoefficientSource {COE_File} \
-     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/dec_8x_coeffs.coe} \
+     CONFIG.Coefficient_File {/home/moller/cameron/MOLLER-RFSoC-MTS/boards/RFSoC4x2/filter_data/no_dec_coeffs.coe} \
      CONFIG.Coefficient_Fractional_Bits {0} \
      CONFIG.Coefficient_Sets {1} \
-     CONFIG.Coefficient_Sign {Signed} \
+     CONFIG.Coefficient_Sign {Unsigned} \
      CONFIG.Coefficient_Structure {Inferred} \
      CONFIG.Coefficient_Width {16} \
-     CONFIG.ColumnConfig {9} \
+     CONFIG.ColumnConfig {1} \
+     CONFIG.Data_Width {16} \
      CONFIG.Decimation_Rate {8} \
      CONFIG.Filter_Architecture {Systolic_Multiply_Accumulate} \
      CONFIG.Filter_Type {Decimation} \
@@ -1060,7 +1064,7 @@ proc cr_bd_mts { parentCell } {
      CONFIG.Number_Channels {1} \
      CONFIG.Number_Paths {1} \
      CONFIG.Output_Rounding_Mode {Truncate_LSBs} \
-     CONFIG.Output_Width {16} \
+     CONFIG.Output_Width {15} \
      CONFIG.Quantization {Integer_Coefficients} \
      CONFIG.RateSpecification {Frequency_Specification} \
      CONFIG.SamplePeriod {1} \
@@ -4427,6 +4431,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets deepCapture_M_AXI_S2MM] [get_bd_
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 
   close_bd_design $design_name 
