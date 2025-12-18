@@ -2622,10 +2622,10 @@ proc cr_bd_mts { parentCell } {
    CONFIG.ADC_Mixer_Type23 {2} \
    CONFIG.ADC_Mixer_Type30 {1} \
    CONFIG.ADC_Mixer_Type31 {1} \
-   CONFIG.ADC_NCO_Freq00 {-1.485} \
-   CONFIG.ADC_NCO_Freq02 {-1.485} \
-   CONFIG.ADC_NCO_Freq20 {-1.485} \
-   CONFIG.ADC_NCO_Freq22 {-1.485} \
+   CONFIG.ADC_NCO_Freq00 {-1.493} \
+   CONFIG.ADC_NCO_Freq02 {-1.493} \
+   CONFIG.ADC_NCO_Freq20 {-1.493} \
+   CONFIG.ADC_NCO_Freq22 {-1.493} \
    CONFIG.ADC_OBS02 {false} \
    CONFIG.ADC_OBS12 {false} \
    CONFIG.ADC_OBS22 {false} \
