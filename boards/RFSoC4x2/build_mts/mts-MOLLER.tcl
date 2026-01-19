@@ -21,6 +21,7 @@ proc checkRequiredFiles { origin_dir} {
   set files [list \
  "[file normalize "$origin_dir/../../ip/rtl/ADCRAMcapture.v"]"\
  "[file normalize "$origin_dir/../../ip/rtl/DACRAMstreamer.v"]"\
+ "[file normalize "$origin_dir/../../ip/rtl/stream_tlaster.v"]"\
  "[file normalize "$origin_dir/mts.xdc"]"\
   ]
   foreach ifile $files {
@@ -169,6 +170,7 @@ set obj [get_filesets sources_1]
 set files [list \
  [file normalize "${origin_dir}/../../ip/rtl/ADCRAMcapture.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/DACRAMstreamer.v"] \
+ [file normalize "${origin_dir}/../../ip/rtl/stream_tlaster.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -231,7 +233,9 @@ if { [get_files ADCRAMcapture.v] == "" } {
 if { [get_files DACRAMstreamer.v] == "" } {
   import_files -quiet -fileset sources_1 DACRAMstreamer.v
 }
-
+if { [get_files stream_tlaster.v] == "" } {
+  import_files -quiet -fileset sources_1 stream_tlaster.v
+}
 
 # Proc to create BD mts
 proc cr_bd_mts { parentCell } {
