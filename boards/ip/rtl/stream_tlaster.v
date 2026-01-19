@@ -32,13 +32,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 module stream_tlaster(
     input clk,          // AXI-Stream clock
-    input start,        // When asserted, starts sending data to the master AXI-Stream 
+    //input start,        // When asserted, starts sending data to the master AXI-Stream 
     input [24:0] count, // Number of data records to be sent before tlast is asserted
     
     //Master AXI-Stream signals
     output reg [15:0] m_axis_tdata,
     output reg m_axis_tvalid,
     output reg m_axis_tlast,
+    output [1:0] m_axis_tkeep,
     input m_axis_tready,
 
     //Slave AXI-Stream signals
@@ -56,6 +57,13 @@ module stream_tlaster(
     reg [1:0] state = IDLE;
     reg [24:0] valid_count;
     reg s_axis_tvalid_prev;
+    
+    // We will always start when s_axis_tvalid is high and m_axis_tready is high
+    wire start;
+    assign start = s_axis_tvalid & m_axis_tready; 
+    
+    // RFDC will never have a subset of bytes invalid, so drive all tkeep bits high always
+    assign m_axis_tkeep = 2'b11;
 
     // Next state logic and outputs
     always @(posedge clk) begin
