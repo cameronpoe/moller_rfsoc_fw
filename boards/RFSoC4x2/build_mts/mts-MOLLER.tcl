@@ -1089,7 +1089,7 @@ proc cr_bd_mts { parentCell } {
     # Create instance: xlconstant_0, and set properties
     set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
     set_property -dict [ list \
-     CONFIG.CONST_VAL {0x1FFFFFF} \
+     CONFIG.CONST_VAL {0x100} \
      CONFIG.CONST_WIDTH {25} \
    ] $xlconstant_0
   
