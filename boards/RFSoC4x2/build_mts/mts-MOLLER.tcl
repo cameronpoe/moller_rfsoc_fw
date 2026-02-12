@@ -310,6 +310,7 @@ proc cr_bd_mts { parentCell } {
   adc_mux\
   add_tlast\
   fir_compiler_8chs\
+  octet_signal_24bit\
   ADCRAMcapture\
   ADCRAMcapture\
   ADCRAMcapture\
@@ -2403,6 +2404,17 @@ proc cr_bd_mts { parentCell } {
    CONFIG.STRATEGY {1} \
  ] $internalRAM_interconnect
 
+  # Create instance: octet_signal_24bit_0, and set properties
+  set block_name octet_signal_24bit
+  set block_cell_name octet_signal_24bit_0
+  if { [catch {set octet_signal_24bit_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $octet_signal_24bit_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: smartconnect_0, and set properties
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
 
@@ -4304,19 +4316,19 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net control_interconnect_M01_AXI [get_bd_intf_pins axi_gpio_0/S_AXI] [get_bd_intf_pins control_interconnect/M01_AXI]
   connect_bd_intf_net -intf_net control_interconnect_M06_AXI [get_bd_intf_pins control_interconnect/M06_AXI] [get_bd_intf_pins system_management_wiz_0/S_AXI_LITE]
   connect_bd_intf_net -intf_net dac2_clk_0_1 [get_bd_intf_ports dac2_clk] [get_bd_intf_pins usp_rf_data_converter_1/dac2_clk]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m00_axis [get_bd_intf_pins adc_mux_0/S_AXIS_0] [get_bd_intf_pins fir_compiler_8chs_0/m00_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m01_axis [get_bd_intf_pins adc_mux_0/S_AXIS_1] [get_bd_intf_pins fir_compiler_8chs_0/m01_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m02_axis [get_bd_intf_pins adc_mux_0/S_AXIS_2] [get_bd_intf_pins fir_compiler_8chs_0/m02_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m03_axis [get_bd_intf_pins adc_mux_0/S_AXIS_3] [get_bd_intf_pins fir_compiler_8chs_0/m03_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m04_axis [get_bd_intf_pins adc_mux_0/S_AXIS_4] [get_bd_intf_pins fir_compiler_8chs_0/m04_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m05_axis [get_bd_intf_pins adc_mux_0/S_AXIS_5] [get_bd_intf_pins fir_compiler_8chs_0/m05_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m06_axis [get_bd_intf_pins adc_mux_0/S_AXIS_6] [get_bd_intf_pins fir_compiler_8chs_0/m06_axis]
-  connect_bd_intf_net -intf_net fir_compiler_8chs_0_m07_axis [get_bd_intf_pins adc_mux_0/S_AXIS_7] [get_bd_intf_pins fir_compiler_8chs_0/m07_axis]
   connect_bd_intf_net -intf_net hier_dac_play_M_AXIS_0 [get_bd_intf_pins axis_broadcaster_0/S_AXIS] [get_bd_intf_pins hier_dac_play/M_AXIS_0]
   connect_bd_intf_net -intf_net hier_fullDec_M_AXIS6 [get_bd_intf_pins hier_adc0_cap/S_AXIS] [get_bd_intf_pins hier_fullDec/M_AXIS6]
   connect_bd_intf_net -intf_net internalRAM_interconnect_M03_AXI [get_bd_intf_pins hier_adc1_cap/S_AXI] [get_bd_intf_pins internalRAM_interconnect/M03_AXI]
   connect_bd_intf_net -intf_net internalRAM_interconnect_M04_AXI [get_bd_intf_pins hier_adc2_cap/S_AXI] [get_bd_intf_pins internalRAM_interconnect/M04_AXI]
   connect_bd_intf_net -intf_net internalRAM_interconnect_M05_AXI [get_bd_intf_pins hier_adc3_cap/S_AXI] [get_bd_intf_pins internalRAM_interconnect/M05_AXI]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m00_axis [get_bd_intf_pins adc_mux_0/S_AXIS_0] [get_bd_intf_pins octet_signal_24bit_0/m00_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m01_axis [get_bd_intf_pins adc_mux_0/S_AXIS_1] [get_bd_intf_pins octet_signal_24bit_0/m01_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m02_axis [get_bd_intf_pins adc_mux_0/S_AXIS_2] [get_bd_intf_pins octet_signal_24bit_0/m02_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m03_axis [get_bd_intf_pins adc_mux_0/S_AXIS_3] [get_bd_intf_pins octet_signal_24bit_0/m03_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m04_axis [get_bd_intf_pins adc_mux_0/S_AXIS_4] [get_bd_intf_pins octet_signal_24bit_0/m04_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m05_axis [get_bd_intf_pins adc_mux_0/S_AXIS_5] [get_bd_intf_pins octet_signal_24bit_0/m05_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m06_axis [get_bd_intf_pins adc_mux_0/S_AXIS_6] [get_bd_intf_pins octet_signal_24bit_0/m06_axis]
+  connect_bd_intf_net -intf_net octet_signal_24bit_0_m07_axis [get_bd_intf_pins adc_mux_0/S_AXIS_7] [get_bd_intf_pins octet_signal_24bit_0/m07_axis]
   connect_bd_intf_net -intf_net ps8_0_axi_periph_M00_AXI [get_bd_intf_pins control_interconnect/M00_AXI] [get_bd_intf_pins usp_rf_data_converter_1/s_axi]
   connect_bd_intf_net -intf_net s_axi_lite_1 [get_bd_intf_pins clocktreeMTS/s_axi_lite] [get_bd_intf_pins control_interconnect/M02_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HPC0_FPD]
@@ -4345,12 +4357,12 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   # Create port connections
   connect_bd_net -net BUFG_I_0_1 [get_bd_ports PL_CLK] [get_bd_pins clocktreeMTS/PL_CLK]
   connect_bd_net -net RFegressReset_peripheral_aresetn [get_bd_pins axis_broadcaster_0/aresetn] [get_bd_pins clocktreeMTS/egress_aresetn] [get_bd_pins hier_adc0_cap/s_axi_aresetn] [get_bd_pins hier_adc1_cap/s_axi_aresetn] [get_bd_pins hier_adc2_cap/s_axi_aresetn] [get_bd_pins hier_adc3_cap/s_axi_aresetn] [get_bd_pins hier_dac_cap/s_axi_aresetn] [get_bd_pins hier_dac_play/s_axi_aresetn] [get_bd_pins internalRAM_interconnect/ARESETN] [get_bd_pins internalRAM_interconnect/M00_ARESETN] [get_bd_pins internalRAM_interconnect/M01_ARESETN] [get_bd_pins internalRAM_interconnect/M02_ARESETN] [get_bd_pins internalRAM_interconnect/M03_ARESETN] [get_bd_pins internalRAM_interconnect/M04_ARESETN] [get_bd_pins internalRAM_interconnect/M05_ARESETN] [get_bd_pins internalRAM_interconnect/S00_ARESETN]
-  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins adc_mux_0/aresetn] [get_bd_pins add_tlast_0/aresetn] [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins fir_compiler_8chs_0/aresetn] [get_bd_pins hier_fullDec/s_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s3_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins adc_mux_0/aresetn] [get_bd_pins add_tlast_0/aresetn] [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins fir_compiler_8chs_0/aresetn] [get_bd_pins hier_fullDec/s_axis_aresetn] [get_bd_pins octet_signal_24bit_0/aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/s3_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net axi_dma_0_s2mm_introut [get_bd_pins axi_dma_0/s2mm_introut] [get_bd_pins xlconcat_0/In0]
   connect_bd_net -net axi_gpio_0_gpio_io_o [get_bd_pins axi_gpio_0/gpio_io_o] [get_bd_pins util_vector_logic_0/Op2]
   connect_bd_net -net axi_gpio_bram_cap_gpio_io_o [get_bd_pins gpio_control/trig_cap] [get_bd_pins hier_adc0_cap/trig_cap] [get_bd_pins hier_adc1_cap/trig_cap] [get_bd_pins hier_adc2_cap/trig_cap] [get_bd_pins hier_adc3_cap/trig_cap] [get_bd_pins hier_dac_cap/trig_cap]
   connect_bd_net -net axi_gpio_dac_gpio_io_o [get_bd_pins gpio_control/dac_enable] [get_bd_pins hier_dac_play/enable]
-  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins adc_mux_0/aclk] [get_bd_pins add_tlast_0/aclk] [get_bd_pins axis_broadcaster_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins fir_compiler_8chs_0/aclk] [get_bd_pins hier_dac_cap/aclk] [get_bd_pins hier_dac_play/aclk] [get_bd_pins hier_fullDec/s_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s3_axis_aclk]
+  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins adc_mux_0/aclk] [get_bd_pins add_tlast_0/aclk] [get_bd_pins axis_broadcaster_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins fir_compiler_8chs_0/aclk] [get_bd_pins hier_dac_cap/aclk] [get_bd_pins hier_dac_play/aclk] [get_bd_pins hier_fullDec/s_axis_aclk] [get_bd_pins octet_signal_24bit_0/aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/s3_axis_aclk]
   connect_bd_net -net clk_wiz_adc0_clk_out2 [get_bd_pins clocktreeMTS/clkDecDiv2] [get_bd_pins gpio_control/dest_clk] [get_bd_pins hier_adc0_cap/axis_clk] [get_bd_pins hier_adc1_cap/axis_clk] [get_bd_pins hier_adc2_cap/axis_clk] [get_bd_pins hier_adc3_cap/axis_clk] [get_bd_pins hier_dac_cap/axis_clk] [get_bd_pins hier_dac_play/axis_clk] [get_bd_pins internalRAM_interconnect/ACLK] [get_bd_pins internalRAM_interconnect/M00_ACLK] [get_bd_pins internalRAM_interconnect/M01_ACLK] [get_bd_pins internalRAM_interconnect/M02_ACLK] [get_bd_pins internalRAM_interconnect/M03_ACLK] [get_bd_pins internalRAM_interconnect/M04_ACLK] [get_bd_pins internalRAM_interconnect/M05_ACLK] [get_bd_pins internalRAM_interconnect/S00_ACLK] [get_bd_pins zynq_ultra_ps_e_0/maxihpm1_fpd_aclk]
   connect_bd_net -net clocktreeMTS_axi_interconnect_aresetn [get_bd_pins clocktreeMTS/axi_interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins smartconnect_2/aresetn]
   connect_bd_net -net clocktreeMTS_clkDec [get_bd_pins clocktreeMTS/clkDec] [get_bd_pins hier_adc0_cap/aclk] [get_bd_pins hier_adc1_cap/aclk] [get_bd_pins hier_adc2_cap/aclk] [get_bd_pins hier_adc3_cap/aclk] [get_bd_pins hier_fullDec/m_axis_aclk]
@@ -4394,6 +4406,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 
   close_bd_design $design_name 
