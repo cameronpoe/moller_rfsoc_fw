@@ -1,3 +1,11 @@
+# MOLLER RFSoC4x2 BCM Overlay
+
+This repo forks the RFSoC-PYNQ Multi-Tile Synchronization Overlay to provide an overlay to readout the RFSoC4x2 for BCM measurements for the MOLLER experiment at Jefferson Lab.
+
+## Rebuilding the bitstream
+
+Currently, the flow for rebuilding the bitstream is to go into boards/RFSoC4x2/build_mts/ and run `make rebuild_tcl_new`. This rebuilds the tcl file for the full board and also for the out-of-context FIR compiler IP. However, one still needs to go into the output, `mts_MOLLER.tcl` and comment out the block of code after the comment `Import local files from the original project`. This can be replaced with `source ./mts_MOLLER_fir_compiler_0.tcl`. 
+
 <img src="./images/AMD_Zynq_RFSoC.png" width="33%"/>
 
 # RFSOC-PYNQ Multi-Tile Synchronization Overlay
