@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- --
 
-.PHONY: rebuild_tcl rebuild_tcl_new
+.PHONY: rebuild_tcl
 
 all: board_files block_design bitstream check_timing handoff
 	@echo
@@ -23,7 +23,7 @@ block_design:
 	vivado -mode batch -source mts.tcl
 
 block_design_moller:
-	vivado -mode batch -source mts-MOLLER.tcl
+	vivado -mode batch -source mts_MOLLER.tcl
 
 bitstream:
 	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs mts
