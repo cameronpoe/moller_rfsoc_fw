@@ -23,7 +23,7 @@ block_design:
 	vivado -mode batch -source mts.tcl
 
 block_design_moller:
-	vivado -mode batch -source mts_MOLLER.tcl
+	vivado -mode batch -source build_bd.tcl
 
 bitstream:
 	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs mts

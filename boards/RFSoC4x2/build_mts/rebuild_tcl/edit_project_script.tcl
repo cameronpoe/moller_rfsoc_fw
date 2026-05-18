@@ -7,6 +7,10 @@ set fp_out [open $output_script w]
 
 set in_block "none"
 
+# Makes sure RFSoC4x2 board files are located
+set _script_dir [file normalize [file dirname [info script]]]
+set_param board.repoPaths [list [file normalize "$_script_dir/../board_files"]]
+
 while {[gets $fp_in line] >= 0} {
     
     # Detect the start of the targeted blocks
