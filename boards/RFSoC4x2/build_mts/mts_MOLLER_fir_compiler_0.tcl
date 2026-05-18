@@ -22,8 +22,8 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-  create_project mts mts -part xczu48dr-fsvg1517-2-e
-  set_property BOARD_PART xilinx.com:zcu208:part0:2.0 [current_project]
+  create_project mts mts -part xczu48dr-ffvg1517-2-e
+  set_property BOARD_PART realdigital.org:rfsoc4x2:part0:1.0 [current_project]
   set_property target_language VHDL [current_project]
   set_property simulator_language Mixed [current_project]
 }
