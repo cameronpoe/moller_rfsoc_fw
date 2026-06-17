@@ -8,26 +8,44 @@ module trigger_tb;
         
     reg aresetn = 1'b1;
     
-    wire trigger_signal;
+    reg trigger_select = 1'b0;
+    reg [31:0] num_triggers = 32'd11;
     
-    reg [31:0] num_triggers = 32'd12;
+    wire trigger_self;
+    wire trigger_ext;
+    
+    reg [31:0] aclk_cycles_full = 32'd23;
+    reg [31:0] aclk_cycles_stable = 32'd19;
+    
     wire [63:0] m_axis_tdata;
     wire m_axis_tvalid;
     wire m_axis_tlast;
     
     wire [62:0] ts;
     
-    self_trigger_signal #(.TRIGGER_FREQ(15_625_000), .DUTY_CYCLE_FRACTION(0.625)) self_trigger_signal_dut (
+    self_trigger_signal dut_trigger_self (
         .aclk(aclk),
         .aresetn(aresetn),
-        .trigger_signal(trigger_signal)
+        .aclk_cycles_full(aclk_cycles_full),
+        .aclk_cycles_stable(aclk_cycles_stable),
+        .trigger_signal(trigger_self)
+    );
+    
+    self_trigger_signal dut_trigger_ext (
+        .aclk(aclk),
+        .aresetn(aresetn),
+        .aclk_cycles_full(aclk_cycles_full),
+        .aclk_cycles_stable(aclk_cycles_stable),
+        .trigger_signal(trigger_ext)
     );
     
     trigger_timestamp trigger_timestamp_dut (
         .aclk(aclk),
         .aresetn(aresetn),
-        .trigger(trigger_signal),
+        .trigger_self(trigger_self),
+        .trigger_ext(trigger_ext),
         .ts(ts),
+        .trigger_select(trigger_select),
         .num_triggers(num_triggers),
         .m_axis_tdata(m_axis_tdata),
         .m_axis_tvalid(m_axis_tvalid),
@@ -43,7 +61,7 @@ module trigger_tb;
     );
     
     initial begin
-        repeat(50)
+        repeat(27)
             @(posedge aclk);
         
         aresetn <= 1'b0;
@@ -55,6 +73,12 @@ module trigger_tb;
         
         repeat(500)
             @(posedge aclk);
+            
+        trigger_select <= 1'b1;
+        
+        repeat(500)
+            @(posedge aclk);
+            
     end
 
 endmodule

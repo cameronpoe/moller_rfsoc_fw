@@ -5,16 +5,34 @@ module trigger_timestamp(
     input aclk,
     input aresetn,
     
-    input trigger,
+    input trigger_self,
+    input trigger_ext,
     input [62:0] ts,
     
+    input trigger_select,
     input [31:0] num_triggers,
     
     output reg [63:0] m_axis_tdata,
     output reg m_axis_tvalid,
-    output reg m_axis_tlast 
-    
+    output reg m_axis_tlast    
     );
+    
+    wire trigger_ext_stable;
+    
+    xpm_cdc_single #(
+        .DEST_SYNC_FF(2),      // number of sync stages
+        .INIT_SYNC_FF(0),
+        .SIM_ASSERT_CHK(0),
+        .SRC_INPUT_REG(0)      // source is async/no clock, so 0
+    ) trigger_cdc (
+        .src_clk(1'b0),        // unused when SRC_INPUT_REG=0
+        .src_in(trigger_ext),
+        .dest_clk(aclk),
+        .dest_out(trigger_ext_stable)
+    );
+        
+    wire trigger;
+    assign trigger = trigger_select ? trigger_ext_stable : trigger_self;
     
     reg trigger_prev;
     reg [31:0] counter = 32'b0;

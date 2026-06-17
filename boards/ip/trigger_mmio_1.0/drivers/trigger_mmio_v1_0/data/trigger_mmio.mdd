@@ -1,0 +1,10 @@
+
+
+OPTION psf_version = 2.1;
+
+BEGIN DRIVER trigger_mmio
+	OPTION supported_peripherals = (trigger_mmio);
+	OPTION copyfiles = all;
+	OPTION VERSION = 1.0;
+	OPTION NAME = trigger_mmio;
+END DRIVER
