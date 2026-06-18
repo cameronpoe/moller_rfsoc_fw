@@ -1,10 +1,10 @@
-# MOLLER RFSoC4x2 BCM Overlay
+# MOLLER BCM Receiver Project
 
-This repo forks the RFSoC-PYNQ Multi-Tile Synchronization Overlay to provide an overlay to readout the RFSoC4x2 for BCM measurements for the MOLLER experiment at Jefferson Lab.
+This repo forks the RFSoC-PYNQ Multi-Tile Synchronization Overlay to provide firmware and software for use in the receiver for BCM readout in MOLLER. The repo contains everything needed to a) work on the firmware and create the bitstream and b) create a board image. Currently, only option a) is at a working stage right now.
 
-## Rebuilding the bitstream
+## Firmware
 
-Currently, the flow for rebuilding the bitstream is to go into boards/RFSoC4x2/build_mts/ and run `make rebuild_tcl_new`. This rebuilds the tcl file for the full board and also for the out-of-context FIR compiler IP. However, one still needs to go into the output, `mts_MOLLER.tcl` and comment out the block of code after the comment `Import local files from the original project`. This can be replaced with `source ./mts_MOLLER_fir_compiler_0.tcl`. 
+The firmware lives in the `boards` directory. For the RFSoC4x2, the project directory is `boards/RFSoC4x2/build_mts/`. From that directory you can run various `make` commands. The main ones to know are `make rebuild_tcl`, which recreates necessary `.tcl` files if you edit the project in the GUI (these are what you store in version control), and `make moller`, which creates the bitstream. I will update this section more later with more instructions.
 
 <img src="./images/AMD_Zynq_RFSoC.png" width="33%"/>
 
