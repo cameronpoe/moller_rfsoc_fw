@@ -11,6 +11,10 @@ set_property PACKAGE_PIN AN11 [get_ports PL_CLK[0]]
 set_property IOSTANDARD LVCMOS18 [get_ports {PL_CLK[*]}]
 set_property IOSTANDARD LVCMOS18 [get_ports {PL_SYSREF[*]}]
 
+# PMOD
+set_property PACKAGE_PIN AH17 [get_ports "trigger_ext"]
+set_property IOSTANDARD LVCMOS18 [get_ports "trigger_ext"]
+
 # PL ddr4 -----------------------------------------------------------------------------------------
 set_property PACKAGE_PIN G13        [get_ports "sys_clk_ddr4_clk_p"]
 set_property PACKAGE_PIN B13        [get_ports "ddr4_pl_adr[0]"]
