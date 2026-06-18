@@ -24,7 +24,7 @@ set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
   create_project mts mts -part xczu48dr-ffvg1517-2-e
   set_property BOARD_PART realdigital.org:rfsoc4x2:part0:1.0 [current_project]
-  set_property target_language VHDL [current_project]
+  set_property target_language Verilog [current_project]
   set_property simulator_language Mixed [current_project]
 }
 
