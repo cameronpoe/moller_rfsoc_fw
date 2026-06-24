@@ -35,11 +35,15 @@ handoff:
 	vivado -mode batch -source handoff.tcl -notrace -tclargs mts
 
 rebuild_tcl:
+	rm -rf mts.copy
+	cp -a mts mts.copy
 	cd ./mts/ && \
 	vivado -mode batch -notrace -source ../rebuild_tcl/write_project_tcl.tcl && \
 	cd .. && \
 	vivado -mode batch -notrace -source ./rebuild_tcl/edit_project_script.tcl && \
 	mv ./mts_MOLLER_edited.tcl ./mts_MOLLER.tcl
+	rm -rf mts
+	mv mts.copy mts
 
 mvbit:
 	cp ./mts/mts.gen/sources_1/bd/mts/hw_handoff/mts.hwh ./moller_rfsoc_fw_vX-X-X.hwh && \
