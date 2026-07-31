@@ -16,4 +16,8 @@ Same as `v1.0.1`, but it includes an integrated logic analyzer (ILA) to debug th
 - probe2 [0:0]: `trigger_select` bit. 
 - probe3 [31:0]: `num_triggers` word.
   
-The reason for putting this in was a bug that was seen when the waveform generator was on and connected to the RFSoC, but no triggers were registered. It turned out to be a cabling issue, not a firmware issue. 
+The reason for putting this in was a bug that was seen when the waveform generator was on and connected to the RFSoC, but no triggers were registered. It turned out to be a cabling issue, not a firmware issue.
+
+### Version 1.0.3
+
+Removed the ILA and changed the external trigger pin to AT15 in the PL. This corresponds to a physical change in the "hot" trigger pin on the PMod header since I am now using a new physical trigger wire after adding a LEMO panel-mount connector to the receiver chassis. 
