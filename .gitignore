@@ -42,3 +42,7 @@ thumbs.db
 *vivado.txt
 *vivado.jou
 *vivado.log
+
+
+# Cameron-added
+bitstreams/**
