@@ -20,4 +20,8 @@ The reason for putting this in was a bug that was seen when the waveform generat
 
 ### Version 1.0.3
 
-Removed the ILA and changed the external trigger pin to AT15 in the PL. This corresponds to a physical change in the "hot" trigger pin on the PMod header since I am now using a new physical trigger wire after adding a LEMO panel-mount connector to the receiver chassis. 
+Removed the ILA and changed the external trigger pin to AT15 in the PL. This corresponds to a physical change in the "hot" trigger pin on the PMod header since I am now using a new physical trigger wire after adding a LEMO panel-mount connector to the receiver chassis.
+
+### Version 1.0.4
+
+Edited the RFDC module so that channels 2 and 4 were not downmixing at all. This was an attempt at reading out the Musson receivers, before we realized the RFSoC4x2 is AC coupled.  
