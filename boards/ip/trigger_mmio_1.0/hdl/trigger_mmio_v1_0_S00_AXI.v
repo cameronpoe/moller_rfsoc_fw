@@ -17,6 +17,7 @@
 		// Users to add ports here
 		output wire trigger_select,
 		output wire use_ramp,
+		output wire [1:0] dma_select,
 		output wire [31:0] num_triggers,
         output wire [31:0] aclk_cycles_full,
         output wire [31:0] aclk_cycles_stable,
@@ -449,6 +450,7 @@
 	// Add user logic here
     assign trigger_select = slv_reg0[0];
     assign use_ramp = slv_reg0[1];
+    assign dma_select = slv_reg0[3:2];
     assign num_triggers = slv_reg1;
     assign aclk_cycles_full = slv_reg2;
     assign aclk_cycles_stable = slv_reg3;

@@ -17,6 +17,7 @@
 		// Users to add ports here
         output wire trigger_select,
         output wire use_ramp,
+        output wire [1:0] dma_select,
         output wire [31:0] num_triggers,
         output wire [31:0] aclk_cycles_full,
         output wire [31:0] aclk_cycles_stable,
@@ -77,6 +78,7 @@
 		// User-defined I/0
 		.trigger_select(trigger_select),
 		.use_ramp(use_ramp),
+		.dma_select(dma_select),
 		.num_triggers(num_triggers),
 		.aclk_cycles_full(aclk_cycles_full),
 		.aclk_cycles_stable(aclk_cycles_stable),
