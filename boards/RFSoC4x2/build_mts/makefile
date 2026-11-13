@@ -3,14 +3,9 @@
 # SPDX-License-Identifier: MIT
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- --
 
-.PHONY: rebuild_tcl
+.PHONY: project export
 
-all: board_files block_design bitstream check_timing handoff
-	@echo
-	@tput setaf 2 ; echo "Built overlays successfully!!"; tput sgr0;
-	@echo
-
-moller: board_files block_design_moller bitstream check_timing handoff
+moller: board_files project bitstream check_timing handoff
 	@echo
 	@tput setaf 2 ; echo "Built MOLLER overlays successfully!!"; tput sgr0;
 	@echo
@@ -19,11 +14,8 @@ board_files:
 	wget "https://www.realdigital.org/downloads/9d2af32116d5420d25da904f6a06bb1f.zip" --no-check-certificate -O bf.zip && \
 	unzip bf.zip -d board_files && rm bf.zip
 
-block_design:
-	vivado -mode batch -source mts.tcl
-
-block_design_moller:
-	vivado -mode batch -source build_bd.tcl
+project:
+	vivado -mode batch -notrace -source create_project.tcl
 
 bitstream:
 	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs mts
@@ -34,16 +26,8 @@ check_timing:
 handoff:
 	vivado -mode batch -source handoff.tcl -notrace -tclargs mts
 
-rebuild_tcl:
-	rm -rf mts.copy
-	cp -a mts mts.copy
-	cd ./mts/ && \
-	vivado -mode batch -notrace -source ../rebuild_tcl/write_project_tcl.tcl && \
-	cd .. && \
-	vivado -mode batch -notrace -source ./rebuild_tcl/edit_project_script.tcl && \
-	mv ./mts_MOLLER_edited.tcl ./mts_MOLLER.tcl
-	rm -rf mts
-	mv mts.copy mts
+export:
+	vivado -mode batch -notrace -source export.tcl
 
 mvbit:
 	cp ./mts/mts.gen/sources_1/bd/mts/hw_handoff/mts.hwh ./moller_rfsoc_fw_vX-X-X.hwh && \

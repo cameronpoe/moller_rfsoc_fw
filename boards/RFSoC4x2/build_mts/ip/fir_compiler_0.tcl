@@ -15,14 +15,14 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ##################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source mts_MOLLER_fir_compiler_0.tcl
+# source fir_compiler_0.tcl
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
-# <./mts/mts.xpr> in the current working folder.
+# <./mts_test/mts_test.xpr> in the current working folder.
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-  create_project mts mts -part xczu48dr-ffvg1517-2-e
+  create_project mts_test mts_test -part xczu48dr-ffvg1517-2-e
   set_property BOARD_PART realdigital.org:rfsoc4x2:part0:1.0 [current_project]
   set_property target_language Verilog [current_project]
   set_property simulator_language Mixed [current_project]
