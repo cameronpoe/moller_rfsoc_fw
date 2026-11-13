@@ -246,6 +246,8 @@ set files [list \
  [file normalize "${origin_dir}/../../ip/rtl/self_trigger_signal.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/trigger_timestamp.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/simple_broadcaster.v"] \
+ [file normalize "${origin_dir}/../../ip/rtl/control_mmio.v"] \
+ [file normalize "${origin_dir}/../../ip/rtl/control_mmio_S00_AXI.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/adc_mux.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/add_tlast.v"] \
  [file normalize "${origin_dir}/../../ip/rtl/self_trigger.v"] \
@@ -403,7 +405,7 @@ if { [get_files simple_broadcaster.v] == "" } {
 proc cr_bd_mts { parentCell } {
 # The design that will be created by this Tcl proc contains the following 
 # module references:
-# adc_mux_v2, adc_packetizer, fir_compiler_8chs, self_trigger_signal, simple_broadcaster, trigger_timestamp, subsystem_timestamp
+# adc_mux_v2, adc_packetizer, fir_compiler_8chs, self_trigger_signal, simple_broadcaster, control_mmio, trigger_timestamp, subsystem_timestamp
 
 
 
@@ -428,7 +430,6 @@ proc cr_bd_mts { parentCell } {
   xilinx.com:ip:proc_sys_reset:5.0\
   xilinx.com:ip:smartconnect:1.0\
   xilinx.com:ip:system_management_wiz:1.3\
-  user.org:user:trigger_mmio_v3_1:3.1\
   xilinx.com:ip:usp_rf_data_converter:2.6\
   xilinx.com:ip:util_vector_logic:2.0\
   xilinx.com:ip:xlconcat:2.1\
@@ -467,6 +468,7 @@ proc cr_bd_mts { parentCell } {
   fir_compiler_8chs\
   self_trigger_signal\
   simple_broadcaster\
+  control_mmio\
   trigger_timestamp\
   subsystem_timestamp\
   "
@@ -924,8 +926,16 @@ proc create_hier_cell_clocktreeMTS { parentCell nameHier } {
    CONFIG.VCCINT_ALARM {false} \
  ] $system_management_wiz_0
 
-  # Create instance: trigger_mmio_v3_1_0, and set properties
-  set trigger_mmio_v3_1_0 [ create_bd_cell -type ip -vlnv user.org:user:trigger_mmio_v3_1:3.1 trigger_mmio_v3_1_0 ]
+  # Create instance: control_mmio_0, and set properties
+  set block_name control_mmio
+  set block_cell_name control_mmio_0
+  if { [catch {set control_mmio_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $control_mmio_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
 
   # Create instance: trigger_timestamp_0, and set properties
   set block_name trigger_timestamp
@@ -2798,7 +2808,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net control_interconnect_M03_AXI [get_bd_intf_pins control_interconnect/M03_AXI] [get_bd_intf_pins system_management_wiz_0/S_AXI_LITE]
   connect_bd_intf_net -intf_net control_interconnect_M04_AXI [get_bd_intf_pins axi_dma_0/S_AXI_LITE] [get_bd_intf_pins control_interconnect/M04_AXI]
   connect_bd_intf_net -intf_net control_interconnect_M05_AXI [get_bd_intf_pins axi_dma_1/S_AXI_LITE] [get_bd_intf_pins control_interconnect/M05_AXI]
-  connect_bd_intf_net -intf_net control_interconnect_M06_AXI [get_bd_intf_pins control_interconnect/M06_AXI] [get_bd_intf_pins trigger_mmio_v3_1_0/s00_axi]
+  connect_bd_intf_net -intf_net control_interconnect_M06_AXI [get_bd_intf_pins control_interconnect/M06_AXI] [get_bd_intf_pins control_mmio_0/s00_axi]
   connect_bd_intf_net -intf_net control_interconnect_M07_AXI [get_bd_intf_pins axi_dma_2/S_AXI_LITE] [get_bd_intf_pins control_interconnect/M07_AXI]
   connect_bd_intf_net -intf_net ddr4_0_C0_DDR4 [get_bd_intf_ports ddr4_pl] [get_bd_intf_pins ddr4_0/C0_DDR4]
   connect_bd_intf_net -intf_net fir_compiler_8chs_0_m00_axis [get_bd_intf_pins adc_mux_v2_0/s_axis_0] [get_bd_intf_pins fir_compiler_8chs_0/m00_axis]
@@ -2837,12 +2847,12 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
 
   # Create port connections
   connect_bd_net -net BUFG_I_0_1 [get_bd_ports PL_CLK] [get_bd_pins clocktreeMTS/PL_CLK]
-  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins adc_mux_v2_0/aresetn] [get_bd_pins adc_packetizer_0/aresetn] [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins control_interconnect/M06_ARESETN] [get_bd_pins fir_compiler_8chs_0/aresetn] [get_bd_pins self_trigger_signal_0/aresetn] [get_bd_pins simple_broadcaster_0/aresetn] [get_bd_pins trigger_mmio_v3_1_0/s00_axi_aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net RFingressReset_peripheral_aresetn [get_bd_pins adc_mux_v2_0/aresetn] [get_bd_pins adc_packetizer_0/aresetn] [get_bd_pins clocktreeMTS/ingress_aresetn] [get_bd_pins control_interconnect/M06_ARESETN] [get_bd_pins fir_compiler_8chs_0/aresetn] [get_bd_pins self_trigger_signal_0/aresetn] [get_bd_pins simple_broadcaster_0/aresetn] [get_bd_pins control_mmio_0/s00_axi_aresetn] [get_bd_pins usp_rf_data_converter_1/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m1_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m2_axis_aresetn] [get_bd_pins usp_rf_data_converter_1/m3_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net axi_dma_0_s2mm_introut [get_bd_pins axi_dma_0/s2mm_introut] [get_bd_pins xlconcat_0/In0]
   connect_bd_net -net axi_dma_1_s2mm_introut [get_bd_pins axi_dma_1/s2mm_introut] [get_bd_pins xlconcat_0/In4]
   connect_bd_net -net axi_dma_2_s2mm_introut [get_bd_pins axi_dma_2/s2mm_introut] [get_bd_pins xlconcat_0/In5]
   connect_bd_net -net axi_gpio_0_gpio_io_o [get_bd_pins axi_gpio_0/gpio_io_o] [get_bd_pins util_vector_logic_0/Op2]
-  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins adc_mux_v2_0/aclk] [get_bd_pins adc_packetizer_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins axis_data_fifo_1/s_axis_aclk] [get_bd_pins axis_data_fifo_2/s_axis_aclk] [get_bd_pins axis_data_fifo_3/s_axis_aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins control_interconnect/M06_ACLK] [get_bd_pins fir_compiler_8chs_0/aclk] [get_bd_pins self_trigger_signal_0/aclk] [get_bd_pins simple_broadcaster_0/aclk] [get_bd_pins trigger_mmio_v3_1_0/s00_axi_aclk] [get_bd_pins trigger_timestamp_0/aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk]
+  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins adc_mux_v2_0/aclk] [get_bd_pins adc_packetizer_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins axis_data_fifo_1/s_axis_aclk] [get_bd_pins axis_data_fifo_2/s_axis_aclk] [get_bd_pins axis_data_fifo_3/s_axis_aclk] [get_bd_pins clocktreeMTS/clkRF] [get_bd_pins control_interconnect/M06_ACLK] [get_bd_pins fir_compiler_8chs_0/aclk] [get_bd_pins self_trigger_signal_0/aclk] [get_bd_pins simple_broadcaster_0/aclk] [get_bd_pins control_mmio_0/s00_axi_aclk] [get_bd_pins trigger_timestamp_0/aclk] [get_bd_pins usp_rf_data_converter_1/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m1_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m2_axis_aclk] [get_bd_pins usp_rf_data_converter_1/m3_axis_aclk]
   connect_bd_net -net clocktreeMTS_axi_interconnect_aresetn [get_bd_pins clocktreeMTS/axi_interconnect_aresetn] [get_bd_pins smartconnect_2/aresetn] [get_bd_pins smartconnect_3/aresetn]
   connect_bd_net -net clocktreeMTS_bus_struct_reset [get_bd_pins clocktreeMTS/bus_struct_reset] [get_bd_pins ddr4_0/sys_rst]
   connect_bd_net -net clocktreeMTS_interrupt [get_bd_pins clocktreeMTS/interrupt] [get_bd_pins xlconcat_0/In2]
@@ -2857,13 +2867,13 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net synchronizeSYSREF_dest_out [get_bd_pins clocktreeMTS/UserSYSREF] [get_bd_pins usp_rf_data_converter_1/user_sysref_adc]
   connect_bd_net -net system_management_wiz_0_ip2intc_irpt [get_bd_pins system_management_wiz_0/ip2intc_irpt] [get_bd_pins xlconcat_0/In3]
   connect_bd_net -net trigger_ext_0_1 [get_bd_ports trigger_ext] [get_bd_pins trigger_timestamp_0/trigger_ext]
-  connect_bd_net -net trigger_mmio_v3_1_0_aclk_cycles_full [get_bd_pins self_trigger_signal_0/aclk_cycles_full] [get_bd_pins trigger_mmio_v3_1_0/aclk_cycles_full]
-  connect_bd_net -net trigger_mmio_v3_1_0_aclk_cycles_stable [get_bd_pins self_trigger_signal_0/aclk_cycles_stable] [get_bd_pins trigger_mmio_v3_1_0/aclk_cycles_stable]
-  connect_bd_net -net trigger_mmio_v3_1_0_dma_select [get_bd_pins simple_broadcaster_0/dma_select] [get_bd_pins trigger_mmio_v3_1_0/dma_select]
-  connect_bd_net -net trigger_mmio_v3_1_0_num_triggers [get_bd_pins trigger_mmio_v3_1_0/num_triggers] [get_bd_pins trigger_timestamp_0/num_triggers]
-  connect_bd_net -net trigger_mmio_v3_1_0_num_words_per_packet [get_bd_pins adc_packetizer_0/words_per_packet] [get_bd_pins trigger_mmio_v3_1_0/num_words_per_packet]
-  connect_bd_net -net trigger_mmio_v3_1_0_trigger_select [get_bd_pins trigger_mmio_v3_1_0/trigger_select] [get_bd_pins trigger_timestamp_0/trigger_select]
-  connect_bd_net -net trigger_mmio_v3_1_0_use_ramp [get_bd_pins adc_mux_v2_0/use_ramp] [get_bd_pins trigger_mmio_v3_1_0/use_ramp]
+  connect_bd_net -net control_mmio_0_aclk_cycles_full [get_bd_pins self_trigger_signal_0/aclk_cycles_full] [get_bd_pins control_mmio_0/aclk_cycles_full]
+  connect_bd_net -net control_mmio_0_aclk_cycles_stable [get_bd_pins self_trigger_signal_0/aclk_cycles_stable] [get_bd_pins control_mmio_0/aclk_cycles_stable]
+  connect_bd_net -net control_mmio_0_dma_select [get_bd_pins simple_broadcaster_0/dma_select] [get_bd_pins control_mmio_0/dma_select]
+  connect_bd_net -net control_mmio_0_num_triggers [get_bd_pins control_mmio_0/num_triggers] [get_bd_pins trigger_timestamp_0/num_triggers]
+  connect_bd_net -net control_mmio_0_num_words_per_packet [get_bd_pins adc_packetizer_0/words_per_packet] [get_bd_pins control_mmio_0/num_words_per_packet]
+  connect_bd_net -net control_mmio_0_trigger_select [get_bd_pins control_mmio_0/trigger_select] [get_bd_pins trigger_timestamp_0/trigger_select]
+  connect_bd_net -net control_mmio_0_use_ramp [get_bd_pins adc_mux_v2_0/use_ramp] [get_bd_pins control_mmio_0/use_ramp]
   connect_bd_net -net usp_rf_data_converter_1_irq [get_bd_pins usp_rf_data_converter_1/irq] [get_bd_pins xlconcat_0/In1]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins axis_data_fifo_1/s_axis_aresetn] [get_bd_pins axis_data_fifo_2/s_axis_aresetn] [get_bd_pins axis_data_fifo_3/s_axis_aresetn] [get_bd_pins trigger_timestamp_0/aresetn] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins xlconcat_0/dout] [get_bd_pins zynq_ultra_ps_e_0/pl_ps_irq0]
@@ -2894,7 +2904,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   assign_bd_address -offset 0x80010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs axi_gpio_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x001000000000 -range 0x000200000000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs ddr4_0/C0_DDR4_MEMORY_MAP/C0_DDR4_ADDRESS_BLOCK] -force
   assign_bd_address -offset 0x80030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs system_management_wiz_0/S_AXI_LITE/Reg] -force
-  assign_bd_address -offset 0x80090000 -range 0x00001000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs trigger_mmio_v3_1_0/s00_axi/reg0] -force
+  assign_bd_address -offset 0x80090000 -range 0x00001000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs control_mmio_0/s00_axi/reg0] -force
   assign_bd_address -offset 0x80040000 -range 0x00040000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] [get_bd_addr_segs usp_rf_data_converter_1/s_axi/Reg] -force
 
   # Exclude Address Segments
