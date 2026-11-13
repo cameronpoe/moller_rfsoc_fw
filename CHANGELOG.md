@@ -24,4 +24,8 @@ Removed the ILA and changed the external trigger pin to AT15 in the PL. This cor
 
 ### Version 1.0.4
 
-Edited the RFDC module so that channels 2 and 4 were not downmixing at all. This was an attempt at reading out the Musson receivers, before we realized the RFSoC4x2 is AC coupled.  
+Edited the RFDC module so that channels 2 and 4 were not downmixing at all. This was an attempt at reading out the Musson receivers, before we realized the RFSoC4x2 is AC coupled.
+
+### Version 1.0.5
+
+Added a DMA select feature, so that data can be written to the PS DDR4 or the PL DDR4. This involved adding new DMAs, but also added a way in `trigger_mmio` custom IP to select one option or the other. I also updated the software drivers for PYNQ so that this can be controlled from the `rfsoc_moller` class easily.  
