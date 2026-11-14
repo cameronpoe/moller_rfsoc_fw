@@ -15,7 +15,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ##################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source mts_MOLLER_fir_compiler_0.tcl
+# source fir_compiler_0.tcl
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
 # <./mts/mts.xpr> in the current working folder.
