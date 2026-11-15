@@ -17,7 +17,7 @@ board_files:
 project:
 	vivado -mode batch -notrace -source create_project.tcl
 
-bitstream:
+bitstream: export
 	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs mts
 
 check_timing:
