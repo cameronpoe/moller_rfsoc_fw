@@ -1,0 +1,2 @@
+create_bd_design gty_test
+save_bd_design
