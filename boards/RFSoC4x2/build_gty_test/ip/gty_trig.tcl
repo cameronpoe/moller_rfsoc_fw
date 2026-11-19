@@ -88,6 +88,7 @@ set_property -dict {
   CONFIG.RX_CC_K_0_0 {false}
   CONFIG.RX_CC_VAL_0_1 {00000000}
   CONFIG.RX_CC_K_0_1 {false}
+  CONFIG.ENABLE_OPTIONAL_PORTS {loopback_in rxcdrhold_in rxpolarity_in rxprbscntreset_in rxprbssel_in txpolarity_in txprbsforceerr_in txprbssel_in qpll0lock_out rxbufstatus_out rxcdrlock_out rxprbserr_out rxprbslocked_out txbufstatus_out}
   CONFIG.RX_REFCLK_SOURCE {}
   CONFIG.TX_REFCLK_SOURCE {}
   CONFIG.PRESET {GTY-Aurora_8B10B}

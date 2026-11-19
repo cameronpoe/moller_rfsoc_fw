@@ -18,16 +18,16 @@ project:
 	vivado -mode batch -notrace -source create_project.tcl
 
 bitstream: export
-	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs mts
+	vivado -mode batch -source build_bitstream.tcl -notrace -tclargs gty_test
 
 check_timing:
-	vivado -mode batch -source check_timing.tcl -notrace -tclargs mts
+	vivado -mode batch -source check_timing.tcl -notrace -tclargs gty_test
 
 handoff:
-	vivado -mode batch -source handoff.tcl -notrace -tclargs mts
+	vivado -mode batch -source handoff.tcl -notrace -tclargs gty_test
 
 export:
 	vivado -mode batch -notrace -source export.tcl
 
 clean:
-	rm -rf mts *.jou *.log NA .Xil *.xsa *.hwh *.bit
+	rm -rf gty_test *.jou *.log NA .Xil *.xsa *.hwh *.bit
