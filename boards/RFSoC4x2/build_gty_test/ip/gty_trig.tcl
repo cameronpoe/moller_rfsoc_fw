@@ -91,6 +91,8 @@ set_property -dict {
   CONFIG.ENABLE_OPTIONAL_PORTS {loopback_in rxcdrhold_in rxpolarity_in rxprbscntreset_in rxprbssel_in txpolarity_in txprbsforceerr_in txprbssel_in qpll0lock_out rxbufstatus_out rxcdrlock_out rxprbserr_out rxprbslocked_out txbufstatus_out}
   CONFIG.RX_REFCLK_SOURCE {}
   CONFIG.TX_REFCLK_SOURCE {}
+  CONFIG.LOCATE_TX_USER_CLOCKING {CORE}
+  CONFIG.LOCATE_RX_USER_CLOCKING {CORE}
   CONFIG.PRESET {GTY-Aurora_8B10B}
   CONFIG.TXPROGDIV_FREQ_SOURCE {QPLL0}
   CONFIG.TXPROGDIV_FREQ_VAL {62.5}
