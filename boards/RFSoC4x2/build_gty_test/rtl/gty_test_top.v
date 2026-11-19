@@ -225,6 +225,11 @@ module gty_test_top (
         .rxctrl1_out                        (rxctrl1),
         .rxctrl2_out                        (rxctrl2),
         .rxctrl3_out                        (rxctrl3),
+        .tx8b10ben_in                       (2'b11),          // 8b/10b on, both channels
+        .rx8b10ben_in                       (2'b11),
+        .rxcommadeten_in                    (2'b11),          // comma detection on
+        .rxpcommaalignen_in                 (2'b11),          // align on plus comma
+        .rxmcommaalignen_in                 (2'b11),          // align on minus comma
 
         // status
         .gtpowergood_out                    (gtpowergood),
